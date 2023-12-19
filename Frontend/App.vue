@@ -4,12 +4,17 @@
           @signUp = "signUp"/>
   <div v-else>
     <div class="Title">
-      <span style="margin-left: 3px;margin-top: 2px;" class="pi pi-user">
-        <span style="font-size: 2vh;cursor: default; color:floralwhite;">
-          {{username}}
-        </span>
+      <span style="position: absolute; left: 0.1vw;margin-top: 0.2vh;">
+        <i class="pi pi-user"></i>
+        <i style="font-size: 2vh;margin-left: 0.2vw;">{{username}}</i>
       </span>
       <span style="margin: auto;cursor: default;">ֆmail</span>
+      <span style="position: absolute; right: 0.1vw;">
+        <button class="logout" @click="logout">
+          <i class="pi pi-sign-out"></i>
+          Logout
+        </button>
+      </span>
     </div>
     <NavBar/>
     <div style="display: flex;">
@@ -34,9 +39,9 @@ export default {
     components: {WelcomePage, NavBar, SideBar, MainBoard},
     data() {
       return {
-        username: '',
+        username: 'Youssif',
         email: '',
-        userLoggedIn: false
+        userLoggedIn: true
       }
     },
     methods: {
@@ -49,6 +54,11 @@ export default {
         this.username = username;
         this.email = email;
         this.userLoggedIn = true;
+      },
+      logout(){
+        this.username = '';
+        this.email = '';
+        this.userLoggedIn = false;
       }
     }
 }
@@ -79,7 +89,7 @@ footer{
   font-size: 2vh;
 }
 .Title {
-  font-size: 3.3vh;
+  font-size: 3.1vh;
   font-weight: bold;
   color: white;
   background-color: rgba(3, 4, 5, 0.763);
@@ -88,5 +98,15 @@ footer{
   width: 100vw;
   margin: 0;
   display: flex;
+}
+.logout {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 2vh;
+  cursor: pointer;
+}
+.logout:hover {
+  color: black;
 }
 </style>
