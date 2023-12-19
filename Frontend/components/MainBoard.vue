@@ -17,6 +17,6 @@ export default {
     height: 85.1vh;
     width: 80vw;
     margin: 0;
-    border-bottom: 1px solid black;
+    border-bottom: 0.1vw solid black;
 }
 </style>

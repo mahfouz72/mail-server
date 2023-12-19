@@ -5,20 +5,20 @@
   <div v-else>
     <div class="Title">
       <span style="position: absolute; left: 0.1vw;margin-top: 0.2vh;">
-        <i class="pi pi-user"></i>
+        <i class="pi pi-user icon" style="font-size: 2.8vh;"></i>
         <i style="font-size: 2vh;margin-left: 0.2vw;">{{username}}</i>
       </span>
       <span style="margin: auto;cursor: default;">ֆmail</span>
       <span style="position: absolute; right: 0.1vw;">
         <button class="logout" @click="logout">
-          <i class="pi pi-sign-out"></i>
+          <i class="pi pi-sign-out" style="font-size: 2vh;"></i>
           Logout
         </button>
       </span>
     </div>
     <NavBar/>
     <div style="display: flex;">
-      <SideBar/>
+      <SideBar :currentFolder = "currentFolder" @open="open"/>
       <MainBoard/>
     </div>
     <footer>
@@ -41,7 +41,8 @@ export default {
       return {
         username: 'Youssif',
         email: '',
-        userLoggedIn: true
+        userLoggedIn: true,
+        currentFolder: 'Inbox',
       }
     },
     methods: {
@@ -59,6 +60,9 @@ export default {
         this.username = '';
         this.email = '';
         this.userLoggedIn = false;
+      },
+      open(folder){
+        this.currentFolder = folder;
       }
     }
 }
