@@ -1,6 +1,5 @@
 package com.mailserver.service;
 
-import com.mailserver.model.Mail;
 import com.mailserver.model.User;
 import org.springframework.stereotype.Service;
 

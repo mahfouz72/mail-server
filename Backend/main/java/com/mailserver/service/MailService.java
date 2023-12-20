@@ -1,9 +1,9 @@
 package com.mailserver.service;
 
-import com.mailserver.model.Mail;
-import com.mailserver.model.User;
+import com.mailserver.model.mail.Mail;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -16,23 +16,20 @@ public class MailService {
     public List<Mail> getSent(String email){
         return userService.getUserByEmail(email).getSent();
     }
-    public List<Mail> getInbox(String email){
-        return userService.getUserByEmail(email).getInbox();
+    public List<Mail> getInbox(String email,String sortingCriteria){
+        List<Mail> inbox = userService.getUserByEmail(email).getInbox();
+        return sort(inbox,sortingCriteria);
     }
-    public Mail sendMail(Mail mail){
+    private List<Mail> sort(List<Mail> mails,String sortingCriteria){
 
-        String from = mail.getFrom();
-        List<String> to = mail.getTo();
-        for(String email:to){
-            User receiver = userService.getUserByEmail(email);
-            if(receiver != null){
-                receiver.getInbox().add(mail);
-            }
-        }
-        User sender = userService.getUserByEmail(from);
-        if(sender != null){
-            sender.getSent().add(mail);
-        }
-       return mail;
+        return switch (sortingCriteria.toLowerCase()){
+            case "date" -> mails.stream().sorted(Comparator.comparing(Mail::getDateTime).reversed()).toList();
+            case "priority" -> mails.stream().sorted(Comparator.comparing(Mail::getPriority).reversed()).toList();
+            default -> mails;
+        };
     }
+    //TODO: add mails to specific folder
+    //TODO: get mails from specific folder
+    //TODO: delete mails from specific folder and add to trash
+
 }

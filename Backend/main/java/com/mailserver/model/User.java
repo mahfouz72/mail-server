@@ -1,5 +1,6 @@
 package com.mailserver.model;
 
+import com.mailserver.model.mail.Mail;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -9,9 +10,11 @@ import java.util.List;
 public class User {
     private String userName;
     private String email;
+    private String password;
     private List<Mail> sent;
     private List<Mail> inbox;
     private List<User> contacts;
+    //TODO: trash,folders,contacts
 
     public User() {
         this.sent = new ArrayList<>();
@@ -40,7 +43,7 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.toLowerCase();
     }
 
     public List<Mail> getSent() {
@@ -65,5 +68,13 @@ public class User {
 
     public void setContacts(List<User> contacts) {
         this.contacts = contacts;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
