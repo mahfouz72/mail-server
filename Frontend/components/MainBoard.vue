@@ -1,12 +1,15 @@
 <template>
     <div class="mainboard">
         <!-- Your navbar content here -->
+        <ComposeWindow></ComposeWindow>
     </div>
 </template>
 
 <script>
+import ComposeWindow from './ComposeWindow.vue';
 export default {
     name: 'MainBoard',
+    components:{ComposeWindow}
     // Your component's logic here
 }
 </script>
