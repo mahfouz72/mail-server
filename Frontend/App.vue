@@ -16,11 +16,10 @@
         </button>
       </span>
     </div>
-    <NavBar/>
+    <NavBar :multiselect = "multiselect" @toggleMultiSelect="toggleMultiSelect"/>
     <div style="display: flex;">
       <SideBar :currentFolder = "currentFolder" @open="open"/>
-      <MainBoard/>
-    </div>
+      <MainBoard :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect" v-model:selectedEmails="selectedEmails"/></div>
     <footer>
       ©2023 OOP Assingment 4
     </footer>
@@ -40,31 +39,66 @@ export default {
     data() {
       return {
         username: 'Youssif',
-        email: '',
+        useremail: '',
         userLoggedIn: true,
         currentFolder: 'Inbox',
+        emails: [],
+        email: {
+          id: '',
+          from: '',
+          to: '',
+          subject: '',
+          body: '',
+          date: '',
+          priority: '',
+          attachments:[]
+        },
+        multiselect: true,
+        selectedEmails: {},
       }
     },
     methods: {
-      login(username, email){
+      login(username, useremail){
         this.username = username;
-        this.email = email;
+        this.useremail = useremail;
         this.userLoggedIn = true;
       },
-      signUp(username, email){
+      signUp(username, useremail){
         this.username = username;
-        this.email = email;
+        this.useremail = useremail;
         this.userLoggedIn = true;
       },
       logout(){
         this.username = '';
-        this.email = '';
+        this.useremail = '';
         this.userLoggedIn = false;
       },
       open(folder){
         this.currentFolder = folder;
+        this.emails = [];
+        const startDate = new Date('2/15/2023');
+        for (let i = 1; i < 80; i++) {
+          const date = new Date(startDate.getTime() + (i * 24 * 60 * 60 * 1000));
+          const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+          this.email = {
+            id: i,
+            from: `Esmail Mahmoud Hassan m3rf4 el esm b3t el tholathy`,
+            to: `Youssif Khaled Ahmed Abdelaziz Mohamed`,
+            subject: `OOP Assignment Assesment w klam ktyr 34an n5ouf el overflow`,
+            body: `E7na gamdyn f45 ana delwa2ty 48al 3lCompose aho w m7fouz 48al 3llogin page w 4o8l 3aly w 2rbna n5ls`,
+            date: formattedDate,
+            priority: 'High',
+            attachments: []
+          };
+          this.emails.push(this.email);
+        }
+      },
+      toggleMultiSelect(){
+        console.log(this.selectedEmails);
+        this.multiselect = !this.multiselect;
+        this.selectedEmails = {};
       }
-    }
+    },
 }
 </script>
 
