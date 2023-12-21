@@ -77,8 +77,8 @@ text-align: right;
 }
 .compose {
     background-color: #ffff;
-    height: 75.1vh;
-    width: 40vw;
+    height: 100%;
+    width: 100%;
     margin: 0;
     border-bottom: 0.1vw solid black;
 }

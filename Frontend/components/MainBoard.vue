@@ -1,9 +1,22 @@
 <template>
     <div class="mainboard">
-        <!-- <ComposeWindow></ComposeWindow> -->
+        <!-- <ComposeWindow/> -->
         <div class="email-list">
             <div class="email" v-for="(email, index) in paginatedEmails" :key="index">
-                {{ email }}
+                <div v-if="multiselect" class="checkbox">
+                    <input type="checkbox" :checked="selectedEmails[email.id]" @change="selectEmail(email)">
+                </div>
+                <div class="user">
+                    <div v-for="line in getEmailUser(email)" :key="line.value">
+                        <label style="font-weight: bold;cursor: pointer;">{{ line.label }}</label>
+                        <i>{{ chopString(line.value, 28-line.label.length) }}</i>
+                    </div>
+                </div>
+                <div class="content">
+                    <i><label style="font-weight: bold;cursor: pointer;">Subject: </label>{{ chopString(email.subject,25) }}</i>
+                    <i><label style="font-weight: bold;cursor: pointer;">Body: </label>{{ chopString(email.body,85) }}</i>
+                </div>
+                <div class="date">{{ chopString(email.date) }}</div>
             </div>
         </div>
         <div class="pagination">
@@ -20,12 +33,13 @@
 // import ComposeWindow from './ComposeWindow.vue';
 export default {
     name: 'MainBoard',
-    // components:{ComposeWindow}
-    props: ['emails'],
+    // components:{ComposeWindow},
+    props: ['emails', 'currentFolder', 'selectedEmails', 'multiselect'],
     data() {
         return {
             currentPage: 1,
             emailsPerPage: 10,
+            compselectedEmails: {},
         };
     },
     computed: {
@@ -58,7 +72,27 @@ export default {
         goToPage(pageNumber) {
             this.currentPage = pageNumber;
         },
-    },
+        getEmailUser(email) {
+            if(this.currentFolder === 'Inbox') {
+                return [{ label: 'From: ', value: email.from }];
+            }else if(this.currentFolder === 'Sent' || this.currentFolder === 'Draft') {
+                return [{ label: 'To: ', value: email.to }];
+            }else if(this.currentFolder === 'Trash'){
+                return [{ label: 'From: ', value: email.from }, { label: 'To:', value: email.to }];
+            }
+        },
+        chopString(string, length){
+            if(string.length > length){
+                return `${string.slice(0, length)}...`;
+            }else{
+                return string;
+            }
+        },
+        selectEmail(email){
+            this.compselectedEmails[email.id] = !this.compselectedEmails[email.id];
+            this.$emit('update:selectedEmails', this.compselectedEmails);
+        },
+    }
 }
 </script>
 
@@ -93,6 +127,44 @@ export default {
     background-color: rgba(127, 129, 132, 0.5);
     color: white;
     cursor: pointer;
+}
+.user{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 20%;
+    height: 100%;
+    margin-right: 1vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 55%;
+    height: 100%;
+    margin-right: 1vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.date {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 8%;
+    height: 40%;
+}
+.checkbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 5%;
+    height: 100%;
 }
 .pagination {
     margin-top: 2vh;

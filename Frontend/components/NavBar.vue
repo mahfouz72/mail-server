@@ -7,6 +7,13 @@
                 Compose
             </button>
         </span>
+        <span style="position: absolute;left: 20vw;margin-top: 0.2vh;">
+            <button class="pi pi-check-square selecttoggle" @click="this.$emit('toggleMultiSelect')"></button>
+            <span v-if="multiselect">
+                <button class="pi pi-trash selectoptnbtn"></button>
+                <button class="pi pi-folder-open selectoptnbtn"></button>
+            </span>
+        </span>
         <span class="search-container">
             <input class="search-field" type="text" v-model="value" @input="search" placeholder="Search"/>
             <button class="pi pi-search icon searchbtn"></button>
@@ -39,6 +46,7 @@ export default {
             searchResults: [],
         };
     },
+    props: ['multiselect'],
     methods: {
         Sort(option) {
             this.sortOption = option;
@@ -70,30 +78,16 @@ export default {
     border-top: 0.1vw solid black;
 }
 
-.dropbtn {
-    margin-top: 1vh;
-    border-radius: 1vw;
-    border: 0.1vw solid black;
-    cursor: pointer;
-    padding: 0.1vh 0.4vw;
-}
-
-.dropdown-content {
+.refresh{
     position: absolute;
-    background-color: #f9f9f9;
-    right: 0;
-    top: 5.3vh;
-}
-
-.dropdown-content option{
+    left: 2vh;
+    top: 1vh;
+    font-size: 3vh;
+    background: none;
+    border: none;
     color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
+    font-weight: bold;
     cursor: pointer;
-}
-.dropdown-content option:hover {
-    background-color: #b9b9b9;
 }
 .compose {
     color: aliceblue;
@@ -107,6 +101,23 @@ export default {
 }
 .compose:hover {
     background-color: rgba(22, 20, 20, 0.863);
+}
+.selecttoggle{
+    border-radius: 0.8vw;
+    background: none;
+    padding: 0.5vw;
+    color: white;
+    cursor: pointer;
+    font-size: 2.5vh;
+}
+.selectoptnbtn{
+    background-color: #b9b9b9;
+    border-radius: 0.8vw;
+    padding: 0.4vw;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    font-size: 2vh;
+    width: 2.5vw;
 }
 .search-container{
     margin-top:1vh;
@@ -136,23 +147,37 @@ export default {
 }
 
 input[type="text"] {
-    padding-right: 3.5vw; /* Make room for the search icon */
+    padding-right: 3.5vw;
 }
 .icon{
     font-size: 1.1vw;
 }
-.refresh{
-    position: absolute;
-    left: 2vh;
-    top: 1vh;
-    font-size: 3vh;
-    background: none;
-    border: none;
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-}
 .refresh:hover{
     color: white;
+}
+.dropbtn {
+    margin-top: 1vh;
+    border-radius: 1vw;
+    border: 0.1vw solid black;
+    cursor: pointer;
+    padding: 0.1vh 0.4vw;
+}
+
+.dropdown-content {
+    position: absolute;
+    background-color: #f9f9f9;
+    right: 0;
+    top: 5.3vh;
+}
+
+.dropdown-content option{
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+.dropdown-content option:hover {
+    background-color: #b9b9b9;
 }
 </style>
