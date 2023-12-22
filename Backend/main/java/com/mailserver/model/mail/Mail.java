@@ -8,13 +8,15 @@ import java.util.List;
 
 @Component
 public class Mail {
+
+    private String id;
     private String from;
     private List<String> to;
     private String subject;
     private String body;
     private LocalDateTime dateTime;
     private Priority priority;
-    //TODO:attachments
+    //TODO:  attachments
 
     public Mail(){
         this.to = new ArrayList<>();
@@ -72,5 +74,13 @@ public class Mail {
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

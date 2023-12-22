@@ -1,5 +1,7 @@
 package com.mailserver.service;
 
+import com.mailserver.model.Folder;
+import com.mailserver.model.User;
 import com.mailserver.model.mail.Mail;
 import org.springframework.stereotype.Service;
 
@@ -9,16 +11,25 @@ import java.util.List;
 @Service
 public class MailService {
     private UserService userService;
+    private FolderService folderService;
 
-    public MailService(UserService userService) {
+    public MailService(UserService userService,FolderService folderService) {
         this.userService = userService;
+        this.folderService = folderService;
     }
-    public List<Mail> getSent(String email){
-        return userService.getUserByEmail(email).getSent();
+
+    public List<Mail> getMails(String email, String folderName, String sortingCriteria) {
+        List<Mail> mails = getMailsByFolderName(email,folderName);
+        return sort(mails,sortingCriteria);
     }
-    public List<Mail> getInbox(String email,String sortingCriteria){
-        List<Mail> inbox = userService.getUserByEmail(email).getInbox();
-        return sort(inbox,sortingCriteria);
+    private List<Mail> getMailsByFolderName(String email,String folderName){
+        User currentUser = userService.getUserByEmail(email);
+        return switch (folderName.toLowerCase()){
+            case "inbox" -> currentUser.getInbox();
+            case "sent" -> currentUser.getSent();
+            case "trash" -> currentUser.getTrash();
+            default -> folderService.getFolder(email,folderName).getMails();
+        };
     }
     private List<Mail> sort(List<Mail> mails,String sortingCriteria){
 
@@ -28,8 +39,33 @@ public class MailService {
             default -> mails;
         };
     }
-    //TODO: add mails to specific folder
-    //TODO: get mails from specific folder
-    //TODO: delete mails from specific folder and add to trash
+
+    public List<Mail> deleteMail(String email, String folderName, String id) {
+
+        User currentUser = userService.getUserByEmail(email);
+
+        if(folderName.equals("trash")){
+            currentUser.getTrash().removeIf(mail -> mail.getId().equals(id));
+            return currentUser.getTrash();
+        }
+
+        return moveMail(email,folderName,"trash",id);
+    }
+    public List<Mail> moveMail(String email, String fromFolder, String toFolder, String id) {
+
+        List<Mail> mails = getMailsByFolderName(email,fromFolder);
+
+        Mail mailToBeMoved = mails.stream().filter(mail -> mail.getId().equals(id)).findFirst().orElse(null);
+        mails.removeIf(mail -> mail.getId().equals(id));
+
+        if(toFolder.equals("trash")){
+            userService.getUserByEmail(email).getTrash().add(mailToBeMoved);
+        }
+        else{
+            Folder to = folderService.getFolder(email,toFolder);
+            to.getMails().add(mailToBeMoved);
+        }
+       return mails;
+    }
 
 }

@@ -14,12 +14,16 @@ public class User {
     private List<Mail> sent;
     private List<Mail> inbox;
     private List<User> contacts;
-    //TODO: trash,folders,contacts
+    private List<Mail> trash;
+    private List<Folder> folders;
+    //TODO: contacts,drafts
 
     public User() {
         this.sent = new ArrayList<>();
         this.inbox = new ArrayList<>();
         this.contacts = new ArrayList<>();
+        this.trash = new ArrayList<>();
+        this.folders = new ArrayList<>();
     }
 
     public User(String userName, String email, List<Mail> sent, List<Mail> inbox, List<User> contacts) {
@@ -76,5 +80,20 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Mail> getTrash() {
+        return trash;
+    }
+    public void setTrash(List<Mail> trash) {
+        this.trash = trash;
+    }
+
+    public List<Folder> getFolders() {
+        return folders;
+    }
+
+    public void setFolders(List<Folder> folders) {
+        this.folders = folders;
     }
 }

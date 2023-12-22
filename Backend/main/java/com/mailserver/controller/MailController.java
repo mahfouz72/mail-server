@@ -17,18 +17,27 @@ public class MailController {
         this.mailSenderFacade = mailSenderFacade;
     }
 
-    @GetMapping("{email}/sent")
-    public List<Mail> getSent(@PathVariable String email){
-        return mailService.getSent(email);
-    }
+    @GetMapping("{email}/{folderName}")
+    public List<Mail> getMails(@PathVariable String email,@PathVariable String folderName,
+                               @RequestParam(required = false,defaultValue = "date") String sortingCriteria){
 
-    @GetMapping("{email}/inbox")
-    public List<Mail> getInbox(@PathVariable String email,@RequestParam(required = false,defaultValue = "date") String sortingCriteria){
-        return mailService.getInbox(email,sortingCriteria);
+            return mailService.getMails(email,folderName,sortingCriteria);
     }
 
     @PostMapping("/compose")
     public Mail sendMail(@RequestBody Mail mail, @RequestParam String priority){
         return mailSenderFacade.sendMail(mail,priority);
     }
+    @PostMapping("{email}/{fromFolder}/{toFolder}/{id}")
+    public List<Mail> moveMail(@PathVariable String email,@PathVariable String fromFolder,
+                               @PathVariable String toFolder,@PathVariable String id){
+
+        return mailService.moveMail(email,fromFolder,toFolder,id);
+    }
+
+    @DeleteMapping("{email}/{folderName}/{id}")
+    public List<Mail> deleteMail(@PathVariable String email,@PathVariable String folderName,@PathVariable String id){
+        return mailService.deleteMail(email,folderName,id);
+    }
+
 }

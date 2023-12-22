@@ -21,17 +21,19 @@ public class MailSenderFacade {
             case "high" -> mail.setPriority(Priority.HIGH);
             case "urgent" -> mail.setPriority(Priority.URGENT);
         }
-
         mail.setDateTime(LocalDateTime.now().withSecond(0).withNano(0));
+        mail.setId(Long.toString(System.currentTimeMillis()));
 
         String from = mail.getFrom();
         List<String> to = mail.getTo();
+
         for(String email:to){
             User receiver = userService.getUserByEmail(email);
             if(receiver != null){
                 receiver.getInbox().add(mail);
             }
         }
+
         User sender = userService.getUserByEmail(from);
         if(sender != null){
             sender.getSent().add(mail);
