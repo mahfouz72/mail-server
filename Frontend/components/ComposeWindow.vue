@@ -4,7 +4,7 @@
         <table class="compose">
             <thead>
                 <th class="left">New Message</th>
-                <th class="right" @Click="this.$emit('closeWindow')">x</th>
+                <th class="right" @click="this.$emit('closeComposeWindow')">x</th>
             </thead>
             <tr class="To">
                 <input type="text" id="Input1" v-model="toField" placeholder="To" />
@@ -13,32 +13,34 @@
                 <input type="text" id="Input2" v-model="subjectField" placeholder="Subject" />
             </tr>
             <tr class="mailBody">
-                <textarea id="textAreaInput" name="textAreaInput" v-model="bodyField"></textarea>
+                <textarea id="textAreaInput" name="textAreaInput"  style="resize: none;" v-model="bodyField"></textarea>
             </tr>
             <tr class="bottom">
                 <input type="file" id="fileupload" ref="fileInput" @change="uploadfile(e)" style="display: none;">
-                <div > 
-                    <span @click="download()" style="color: blue; cursor: pointer;">{{ attachmentNames }}</span>
-                    <span @click="detach()" v-show="attachmentNames !==''" style="cursor: pointer;">   x</span>
+                <div v-for="attachment in attachmentNames" :key="attachment"> 
+                    <span @click="download()" style="color.hover: blue; cursor: pointer; ">{{ attachment }}</span>
+                    <span @click="detach()" v-show="attachment !==''" style="cursor: pointer;">   x</span>
                 </div>
                 <button class="pi pi-paperclip" @click="this.$refs.fileInput.click();"></button>
                 <button class="pi pi-send"></button>
             </tr>
         </table>
+        
     </div>
 </template>
 
 <script>
 export default {
     name: 'ComposeWindow',
+    emits:['closeComposeWindow'],
     // Your component's logic here
     data() {
         return {
             toField: '',
             subjectField: '',
             bodyField: '',
-            attachmentNames:'', //attachments 
-            attachmentId: '',
+            attachmentNames:[], //attachments 
+            attachmentIds: [],
 
         }
     },
@@ -52,14 +54,14 @@ export default {
                 body: formData
             }).then(result => result.json())
                 .then(result => {
-                    this.attachmentNames=result.fileName // attachment file name
-                    this.attachmentId = result.id// attachment Id
+                    this.attachmentNames.push(result.fileName) // attachment file name
+                    this.attachmentIds.push(result.id)        // attachment Id
                     //alert(JSON.stringify(result)) // testing and will ve remove
                 });
         },
         download() {
             console.log("download")
-            fetch('http://localhost:8080/download/' + this.attachmentId, {
+            fetch('http://localhost:8080/download/' + this.attachmentIds, {
                 method: "GET"
             }).then(res => {
                 console.log("downloaded successfully") //testing
@@ -67,7 +69,7 @@ export default {
             })
         },
         detach() {
-            fetch('http://localhost:8080/detach/' + this.attachmentId, {
+            fetch('http://localhost:8080/detach/' + this.attachmentIds, {
                 method: "DELETE",
             }).then(res => {
                 this.attachmentNames = ''
@@ -130,6 +132,7 @@ th.right {
 
 .pi-paperclip {
     cursor: pointer;
+    border-radius: 5px;
 }
 
 .pi-send {
@@ -137,7 +140,7 @@ th.right {
     border-radius: 12px;
     width: 60px;
     cursor: pointer;
-    background-color: rgba(0, 0, 255, 0.4);
+    background-color: rgba(0, 87, 248, 0.7);
 }
 
 .compose {
