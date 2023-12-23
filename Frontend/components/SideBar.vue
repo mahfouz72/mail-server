@@ -12,7 +12,10 @@
             <button :class="{selected: currentFolder === 'Trash'}" @click="$emit('open','Trash')"
                     class="sidebar-button"><i class="pi pi-trash icon"></i>Trash</button>
         </i>
-        <button class="sidebar-button add-button"><i class="pi pi-plus-circle  icon"></i>Add Folder</button>
+        <div class="userFolders">
+            <button v-for="folder in Addedfolders" :key="folder" class="userFolder">{{ folder }}</button>
+        </div>
+        <button class="sidebar-button add-button" @click="addFolder"><i class="pi pi-plus-circle  icon"></i>Add Folder</button>
     </div>
 </template>
 
@@ -20,7 +23,16 @@
 export default {
     name: 'SideBar',
     props: ['currentFolder'],
-    // Your component's logic here
+    data() {
+        return {
+            Addedfolders: [],
+        };
+    },
+    methods: {
+        addFolder() {
+            this.Addedfolders.push('New Folder');
+        },
+    },
 }
 </script>
 
@@ -58,6 +70,42 @@ export default {
     color: black;
 }
 .sidebar-button:hover {
+    background-color: rgba(7, 10, 10, 0.215);
+    color: black;
+}
+.userFolders {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin-top: 2;
+    overflow-y: scroll;
+}
+::-webkit-scrollbar{
+    width: 0.8vw;
+    background-color: #222121; /* Dark background */
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb{
+    background-color: #888; /* Lighter handle */
+    border-radius: 5px;
+}
+.userFolder {
+    width: 100%;
+    background-color: transparent;
+    padding: 1vh;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    border: none;
+    color: white;
+    font-size: 1.2vw;
+    text-align: left;
+    cursor: pointer;
+}
+.userFolder:hover {
     background-color: rgba(7, 10, 10, 0.215);
     color: black;
 }

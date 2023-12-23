@@ -1,6 +1,5 @@
 <template>
     <div class="mainboard">
-        <!-- <ComposeWindow/> -->
         <div class="email-list">
             <div class="email" v-for="(email, index) in paginatedEmails" :key="index">
                 <div v-if="multiselect" class="checkbox">
@@ -30,10 +29,8 @@
 </template>
 
 <script>
-// import ComposeWindow from './ComposeWindow.vue';
 export default {
     name: 'MainBoard',
-    // components:{ComposeWindow},
     props: ['emails', 'currentFolder', 'selectedEmails', 'multiselect'],
     data() {
         return {
@@ -109,12 +106,14 @@ export default {
     width: 100%;
     justify-content: flex-start;
     align-items: center;
+    padding-left: 1vw;
+    padding-top: 1.5vh;
 }
 .email {
     background-color: rgba(127, 129, 132, 0.821);
     height: 6.5vh;
     width: 95%;
-    margin: 1vh;
+    margin-bottom: 1vh;
     border-radius: 10px;
     display: flex;
     justify-content: flex-start;
@@ -161,10 +160,10 @@ export default {
 }
 .checkbox {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: center;
     width: 5%;
-    height: 100%;
+    height: 40%;
 }
 .pagination {
     margin-top: 2vh;

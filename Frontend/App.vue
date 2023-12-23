@@ -16,10 +16,14 @@
         </button>
       </span>
     </div>
-    <NavBar :multiselect = "multiselect" @toggleMultiSelect="toggleMultiSelect"/>
+    <NavBar :currentFolder="currentFolder" :multiselect="multiselect" :composing="composing" @toggleMultiSelect="toggleMultiSelect" @compose="composing = !composing"/>
     <div style="display: flex;">
       <SideBar :currentFolder = "currentFolder" @open="open"/>
-      <MainBoard :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect" v-model:selectedEmails="selectedEmails"/></div>
+      <div>
+        <MainBoard v-if="!composing" :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect" v-model:selectedEmails="selectedEmails"></MainBoard>
+        <ComposeWindow v-else @closeWindow="composing = false"/>
+      </div>
+    </div>
     <footer>
       ©2023 OOP Assingment 4
     </footer>
@@ -31,17 +35,18 @@ import MainBoard from './components/MainBoard.vue';
 import NavBar from './components/NavBar.vue';
 import SideBar from './components/SideBar.vue';
 import WelcomePage from './components/WelcomePage.vue';
+import ComposeWindow from './components/ComposeWindow.vue';
 import 'primeicons/primeicons.css';
 
 export default {
     name: "App",
-    components: {WelcomePage, NavBar, SideBar, MainBoard},
+    components: {WelcomePage, NavBar, SideBar, MainBoard, ComposeWindow},
     data() {
       return {
         username: 'Youssif',
         useremail: '',
         userLoggedIn: true,
-        currentFolder: 'Inbox',
+        currentFolder: '',
         emails: [],
         email: {
           id: '',
@@ -55,6 +60,7 @@ export default {
         },
         multiselect: true,
         selectedEmails: {},
+        composing: false,
       }
     },
     methods: {

@@ -4,7 +4,7 @@
         <table class="compose">
             <thead>
                 <th class="left">New Message</th>
-                <th class="right" @Click="this.$emit('closeWindow')">x</th>
+                <th class="right" @click="this.$emit('closeWindow')">x</th>
             </thead>
             <tr class="To">
                 <input type="text" id="Input1" v-model="toField" placeholder="To" />
@@ -89,7 +89,6 @@ thead {
     background-color: rgba(0, 0, 0, 0.1);
     color: black;
     height: 10px;
-
 }
 
 th.left {
@@ -121,7 +120,7 @@ th.right {
     height: 400px;
     width: 100%;
     text-align: right top;
-
+    resize: none;
 }
 
 .bottom {
@@ -141,9 +140,9 @@ th.right {
 }
 
 .compose {
-    background-color: #ffff;
-    height: 100%;
-    width: 100%;
+    background-color: #ffff;   
+    height: 85.1vh;
+    width: 80vw;
     margin: 0;
     border-bottom: 0.1vw solid black;
 }
