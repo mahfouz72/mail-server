@@ -8,13 +8,15 @@ import java.util.List;
 
 @Component
 public class Mail {
+
+    private String id;
     private String from;
     private List<String> to;
     private String subject;
     private String body;
     private LocalDateTime dateTime;
     private Priority priority;
-    //TODO:attachments
+    //TODO:  attachments
 
     public Mail(){
         this.to = new ArrayList<>();
@@ -24,6 +26,16 @@ public class Mail {
         this.to = to;
         this.subject = subject;
         this.body = body;
+    }
+
+    public Mail(MailBuilder mailBuilder) {
+        this.id = mailBuilder.getId();
+        this.from = mailBuilder.getFrom();
+        this.to = mailBuilder.getTo();
+        this.subject = mailBuilder.getSubject();
+        this.body = mailBuilder.getBody();
+        this.dateTime = mailBuilder.getDateTime();
+        this.priority = mailBuilder.getPriority();
     }
 
     public String getFrom() {
@@ -72,5 +84,13 @@ public class Mail {
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

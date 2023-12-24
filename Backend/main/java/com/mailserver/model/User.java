@@ -13,16 +13,21 @@ public class User {
     private String password;
     private List<Mail> sent;
     private List<Mail> inbox;
-    private List<User> contacts;
-    //TODO: trash,folders,contacts
+    private List<Contact> contacts;
+    private List<Mail> trash;
+    private List<Folder> folders;
+    private List<Mail> drafts;
 
     public User() {
         this.sent = new ArrayList<>();
         this.inbox = new ArrayList<>();
         this.contacts = new ArrayList<>();
+        this.trash = new ArrayList<>();
+        this.folders = new ArrayList<>();
+        this.drafts = new ArrayList<>();
     }
 
-    public User(String userName, String email, List<Mail> sent, List<Mail> inbox, List<User> contacts) {
+    public User(String userName, String email, List<Mail> sent, List<Mail> inbox, List<Contact> contacts) {
         this.userName = userName;
         this.email = email;
         this.sent = sent;
@@ -62,11 +67,11 @@ public class User {
         this.inbox = inbox;
     }
 
-    public List<User> getContacts() {
+    public List<Contact> getContacts() {
         return contacts;
     }
 
-    public void setContacts(List<User> contacts) {
+    public void setContacts(List<Contact> contacts) {
         this.contacts = contacts;
     }
 
@@ -76,5 +81,28 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Mail> getTrash() {
+        return trash;
+    }
+    public void setTrash(List<Mail> trash) {
+        this.trash = trash;
+    }
+
+    public List<Folder> getFolders() {
+        return folders;
+    }
+
+    public void setFolders(List<Folder> folders) {
+        this.folders = folders;
+    }
+
+    public List<Mail> getDrafts() {
+        return drafts;
+    }
+
+    public void setDrafts(List<Mail> drafts) {
+        this.drafts = drafts;
     }
 }

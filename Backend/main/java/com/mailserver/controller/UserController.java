@@ -8,12 +8,8 @@ import java.util.List;
 
 @RestController
 public class UserController {
-    private UserService userService;
+    private  UserService userService = UserService.getInstance();
 
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @PostMapping("/user/register")
     public User register(@RequestBody User user){
@@ -34,6 +30,15 @@ public class UserController {
     @GetMapping("/{email}")
     public User getUserByEmail(@PathVariable String email){
         return userService.getUserByEmail(email);
+    }
+
+    @PostMapping("/user/save")
+    public void saveUsers(){
+        userService.saveUsers();
+    }
+    @GetMapping("/user/load")
+    public void loadUsers(){
+        userService.LoadUsers();
     }
 
 }
