@@ -1,5 +1,7 @@
-package com.mailserver;
+package com.mailserver.controller;
 
+import com.mailserver.service.AttachmentService;
+import com.mailserver.model.Attachment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +15,7 @@ import java.util.Collection;
 @CrossOrigin(origins = "http://localhost:3000")
 public class AttachmentController {
     @Autowired
-    attachmentService attachmentService =new attachmentService();
+    AttachmentService attachmentService =new AttachmentService();
 
     @GetMapping("/attachments")
     public Collection<Attachment> getAll(){
@@ -35,4 +37,5 @@ public class AttachmentController {
     public ResponseEntity<byte[]> download(@PathVariable String id){
         return attachmentService.download(id);
     }
+
 }
