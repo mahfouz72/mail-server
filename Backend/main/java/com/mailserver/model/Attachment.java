@@ -1,4 +1,4 @@
-package com.mailserver;
+package com.mailserver.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
