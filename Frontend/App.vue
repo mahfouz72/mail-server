@@ -20,7 +20,8 @@
     <div style="display: flex;">
       <SideBar :currentFolder = "currentFolder" @open="open"/>
       <div>
-        <MainBoard v-if="!composing" :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect" v-model:selectedEmails="selectedEmails"></MainBoard>
+        <MainBoard v-if="!composing && windowState==='viewFolders'" @openMail="openMail" :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect" v-model:selectedEmails="selectedEmails"></MainBoard>
+        <ViewMail v-else-if="!composing && windowState==='viewMail'" @closeViewMail="windowState='viewFolders'" :email="email"/>
         <ComposeWindow v-else @closeWindow="composing = false"/>
       </div>
     </div>
@@ -36,11 +37,12 @@ import NavBar from './components/NavBar.vue';
 import SideBar from './components/SideBar.vue';
 import WelcomePage from './components/WelcomePage.vue';
 import ComposeWindow from './components/ComposeWindow.vue';
+import ViewMail from './components/ViewMail.vue';
 import 'primeicons/primeicons.css';
 
 export default {
     name: "App",
-    components: {WelcomePage, NavBar, SideBar, MainBoard, ComposeWindow},
+    components: {WelcomePage, NavBar, SideBar, MainBoard, ComposeWindow, ViewMail},
     data() {
       return {
         username: 'Youssif',
@@ -58,9 +60,10 @@ export default {
           priority: '',
           attachments:[]
         },
-        multiselect: true,
+        multiselect: false,
         selectedEmails: {},
         composing: false,
+        windowState: 'viewFolders'
       }
     },
     methods: {
@@ -103,6 +106,10 @@ export default {
         console.log(this.selectedEmails);
         this.multiselect = !this.multiselect;
         this.selectedEmails = {};
+      },
+      openMail(id){
+        this.windowState = 'viewMail';
+        this.email = this.emails.find(email => email.id === id);
       }
     },
 }

@@ -1,9 +1,9 @@
 <template>
     <div class="mainboard">
         <div class="email-list">
-            <div class="email" v-for="(email, index) in paginatedEmails" :key="index">
+            <div class="email" v-for="(email, index) in paginatedEmails" :key="index" @click="this.$emit('openMail',email.id)">
                 <div v-if="multiselect" class="checkbox">
-                    <input type="checkbox" :checked="selectedEmails[email.id]" @change="selectEmail(email)">
+                    <input type="checkbox" :checked="selectedEmails[email.id]" @click.stop="selectEmail(email)">
                 </div>
                 <div class="user">
                     <div v-for="line in getEmailUser(email)" :key="line.value">
@@ -38,6 +38,14 @@ export default {
             emailsPerPage: 10,
             compselectedEmails: {},
         };
+    },
+    watch: {
+        multiselect(newVal) {
+            if(!newVal){
+                this.compselectedEmails = {};
+                this.$emit('update:selectedEmails', this.compselectedEmails);
+            }
+        }
     },
     computed: {
         paginatedEmails() {

@@ -10,6 +10,9 @@
                 <div class="form-group">
                     <input type="email" id="email" v-model="email" placeholder="Email" />
                 </div>
+                <div>
+                    {{ Message }}
+                </div>
                 <button class="Btn" @click="this.$emit('login', this.username, this.email)">Login</button>
                 <button class="Btn" @click="this.$emit('signUp', this.username, this.email)">SignUp</button>
             </form>
@@ -23,7 +26,8 @@ export default {
     data() {
         return {
             username: '',
-            email: ''
+            email: '',
+            Message: ''
         };
     }
 };

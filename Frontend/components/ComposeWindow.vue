@@ -7,9 +7,9 @@
             </thead>
             <tr>
                 <input class="To" type="text" id="Input1" v-model="toField" placeholder="To" />
-                <select v-model="priority">
-                    <option v-for="option in priorityOptions" :value="option" :key="option">
-                        {{option}}
+                <select :class="getPriorityColor(priority)" class="Priority" v-model="priority">
+                    <option v-for="option in priorityOptions" :value="option" :key="option" :class="getPriorityColor(option)">
+                        {{ option }}
                     </option>
                 </select>
             </tr>
@@ -23,9 +23,9 @@
                 <input type="file" id="fileupload" ref="fileInput" @change="uploadfile(e)" style="display: none;">
                 <button class="pi pi-paperclip attach" @click="this.$refs.fileInput.click();"></button>
                 <div class="attchList">
-                    <div v-for="attachment in attachmentNames" :key="attachment" class="Attachment"> 
-                        <span @click="download()" style="color.hover: blue; cursor: pointer; ">{{ attachment }}</span>
-                        <!-- <span @click="detach()" v-show="attachment !==''" style="cursor: pointer;">x</span> -->
+                    <div v-for="attchmnt in attachments" :key="attchmnt" class="Attachment"> 
+                        <span @click="download()" style="color.hover: blue; cursor: pointer; ">{{ attchmnt.name }}</span>
+                        <button class="pi pi-times" @click="detach(attchmnt.id)"></button>
                     </div>
                 </div>
                 <button class="pi pi-send send"></button>
@@ -43,8 +43,11 @@ export default {
             toField: '',
             subjectField: '',
             bodyField: '',
-            attachmentNames:['Att1','Att2','Att3','a','b','Att1','Att2','Att3','a','b'], //attachments 
-            attachmentIds: [],
+            attachment: {
+                id: '',
+                name: ''
+            },
+            attachments: [],
             priority: 'medium',
             priorityOptions: ['urgent','high', 'medium', 'low']
         }
@@ -54,34 +57,50 @@ export default {
             let fileInput = document.getElementById('fileupload');
             let formData = new FormData();
             formData.append("data", fileInput.files[0]);
-            await fetch('http://localhost:8080/attach', {
+            await fetch('http://localhost:8080/attach', { 
                 method: "POST",
                 body: formData
             }).then(result => result.json())
                 .then(result => {
-                    this.attachmentNames.push(result.fileName) // attachment file name
-                    this.attachmentIds.push(result.id)        // attachment Id
-                    //alert(JSON.stringify(result)) // testing and will ve remove
+                    this.attachments.push({id: result.id, name: result.fileName})
+                    console.log(this.attachment)
+                    console.log(this.attachments)
+                    //alert(JSON.stringify(result))
                 });
         },
         download() {
             console.log("download")
-            fetch('http://localhost:8080/download/' + this.attachmentIds, {
+            fetch('http://localhost:8080/download/' + this.attachment.id,{
                 method: "GET"
             }).then(res => {
                 console.log("downloaded successfully") //testing
                 window.open(res.url)
             })
         },
-        detach() {
-            fetch('http://localhost:8080/detach/' + this.attachmentIds, {
+        detach(id) {
+            fetch('http://localhost:8080/detach/' + id,{
                 method: "DELETE",
             }).then(res => {
-                this.attachmentNames = ''
+                for (let i = 0; i < this.attachments.length; i++) {
+                    if (this.attachments[i].id === id) {
+                        this.attachments.splice(i, 1);
+                    }
+                }
                 console.log(res.url) //testing
                 console.log("deleted successfully") 
             })
-        },  
+        },
+        getPriorityColor(priority) {
+            if (priority === 'urgent') {
+                return 'red';
+            } else if (priority === 'high') {
+                return 'orange';
+            } else if (priority === 'medium') {
+                return 'blue';
+            } else if (priority === 'low') {
+                return 'grey';
+            }
+        }
 
     }
 }
@@ -125,8 +144,31 @@ table {
     border: 0.2vh solid black;
     padding-left: 0.5vw;
     margin-bottom: 1.2vh;
+    margin-right: 13vw;
     width: 50vw;
     background-color: azure;
+}
+.Priority {
+    height: 4.5vh;
+    border-radius: 5vh;
+    border: 0.3vh solid black;
+    padding-left: 0.5vw;
+    width: 7vw;
+    background-color: azure;
+    font-weight: bold;
+    cursor: pointer;
+}
+.red {
+    color: red;
+}
+.orange {
+    color: orange;
+}
+.blue {
+    color: blue;
+}
+.grey {
+    color: grey;
 }
 .subject {
     height: 4.5vh;
