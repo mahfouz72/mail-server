@@ -1,5 +1,6 @@
-package com.mailserver;
+package com.mailserver.service;
 
+import com.mailserver.model.Attachment;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 @Service
 public class attachmentService {
-    private final Map<String,Attachment> db=new HashMap<>(){};
+    private final Map<String, Attachment> db=new HashMap<>(){};
 
     public Collection<Attachment> get(){return db.values();}
     public Attachment get(String id){
