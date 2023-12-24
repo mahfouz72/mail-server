@@ -1,12 +1,10 @@
 <template>
-  <WelcomePage v-if="!userLoggedIn "
-          @login = "login"
-          @signUp = "signUp"/>
+  <WelcomePage v-if="!userLoggedIn" @login="login" @signUp="signUp" />
   <div v-else>
     <div class="Title">
       <span style="position: absolute; left: 0.1vw;margin-top: 0.2vh;">
         <i class="pi pi-user icon" style="font-size: 2.8vh;"></i>
-        <i style="font-size: 2vh;margin-left: 0.2vw;">{{username}}</i>
+        <i style="font-size: 2vh;margin-left: 0.2vw;">{{ username }}</i>
       </span>
       <span style="margin: auto;cursor: default;">ֆmail</span>
       <span style="position: absolute; right: 0.1vw;">
@@ -16,13 +14,14 @@
         </button>
       </span>
     </div>
-    <NavBar :currentFolder="currentFolder" :multiselect="multiselect" :composing="composing" @toggleMultiSelect="toggleMultiSelect" @compose="composing = !composing"/>
+    <NavBar :currentFolder="currentFolder" :multiselect="multiselect" :composing="composing"
+      @toggleMultiSelect="toggleMultiSelect" @compose="composing = !composing" />
     <div style="display: flex;">
-      <SideBar :currentFolder = "currentFolder" @open="open"/>
+      <SideBar :currentFolder="currentFolder" @open="open" />
       <div>
-        <MainBoard v-if="!composing && windowState==='viewFolders'" @openMail="openMail" :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect" v-model:selectedEmails="selectedEmails"></MainBoard>
-        <ViewMail v-else-if="!composing && windowState==='viewMail'" @closeViewMail="windowState='viewFolders'" :email="email"/>
-        <ComposeWindow v-else @closeWindow="composing = false"/>
+        <MainBoard v-if="!composing" :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect"
+          v-model:selectedEmails="selectedEmails"></MainBoard>
+        <ComposeWindow v-else @closeWindow="composing = false" />
       </div>
     </div>
     <footer>
@@ -37,86 +36,109 @@ import NavBar from './components/NavBar.vue';
 import SideBar from './components/SideBar.vue';
 import WelcomePage from './components/WelcomePage.vue';
 import ComposeWindow from './components/ComposeWindow.vue';
-import ViewMail from './components/ViewMail.vue';
 import 'primeicons/primeicons.css';
 
 export default {
-    name: "App",
-    components: {WelcomePage, NavBar, SideBar, MainBoard, ComposeWindow, ViewMail},
-    data() {
-      return {
-        username: 'Youssif',
-        useremail: '',
-        userLoggedIn: true,
-        currentFolder: '',
-        emails: [],
-        email: {
-          id: '',
-          from: '',
-          to: '',
-          subject: '',
-          body: '',
-          date: '',
-          priority: '',
-          attachments:[]
-        },
-        multiselect: false,
-        selectedEmails: {},
-        composing: false,
-        windowState: 'viewFolders'
-      }
+  name: "App",
+  components: { WelcomePage, NavBar, SideBar, MainBoard, ComposeWindow },
+  data() {
+    return {
+      username: 'user1',
+      useremail: 'user1@cse.com',
+      userLoggedIn: true,
+      currentFolder: '',
+      emails: [],
+      email: {
+        id: '',
+        from: '',
+        to: '',
+        subject: '',
+        body: '',
+        date: '',
+        priority: '',
+        attachments: []
+      },
+      multiselect: true,
+      selectedEmails: {},
+      composing: false,
+    }
+  },
+  methods: {
+    login(username, useremail) {
+      this.username = username;
+      this.useremail = useremail;
+      this.userLoggedIn = true;
     },
-    methods: {
-      login(username, useremail){
-        this.username = username;
-        this.useremail = useremail;
-        this.userLoggedIn = true;
-      },
-      signUp(username, useremail){
-        this.username = username;
-        this.useremail = useremail;
-        this.userLoggedIn = true;
-      },
-      logout(){
-        this.username = '';
-        this.useremail = '';
-        this.userLoggedIn = false;
-      },
-      open(folder){
-        this.currentFolder = folder;
-        this.emails = [];
-        const startDate = new Date('2/15/2023');
-        for (let i = 1; i < 80; i++) {
-          const date = new Date(startDate.getTime() + (i * 24 * 60 * 60 * 1000));
-          const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-          this.email = {
-            id: i,
-            from: `Esmail Mahmoud Hassan m3rf4 el esm b3t el tholathy`,
-            to: `Youssif Khaled Ahmed Abdelaziz Mohamed`,
-            subject: `OOP Assignment Assesment w klam ktyr 34an n5ouf el overflow`,
-            body: `E7na gamdyn f45 ana delwa2ty 48al 3lCompose aho w m7fouz 48al 3llogin page w 4o8l 3aly w 2rbna n5ls`,
-            date: formattedDate,
-            priority: 'High',
-            attachments: []
-          };
-          this.emails.push(this.email);
-        }
-      },
-      toggleMultiSelect(){
-        console.log(this.selectedEmails);
-        this.multiselect = !this.multiselect;
-        this.selectedEmails = {};
-      },
-      openMail(id){
-        this.windowState = 'viewMail';
-        this.email = this.emails.find(email => email.id === id);
+    signUp(username, useremail) {
+      this.username = username;
+      this.useremail = useremail;
+      const userRequest = {
+        userName: username,
+        email:useremail,
       }
+      fetch(`http://localhost:8080/user/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userRequest),
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(JSON.stringify(data))
+        })
+        .catch(error => {
+          console.error('Error:', error)
+        });
+      this.userLoggedIn = true;
     },
+    logout() {
+      this.username = '';
+      this.useremail = '';
+      this.userLoggedIn = false;
+    },
+    open(folder) {
+      this.currentFolder = folder;
+      this.emails = [];
+      fetch('http://localhost:8080/'+this.useremail+'/'+folder.toLowerCase(), { 
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+            })
+            .then(res => res.json())
+            .then(data => {
+              console.log(JSON.stringify(data))
+              this.emails=data
+              console.log(this.emails)
+            })
+            .catch(error => {
+              console.error('Error:', error)
+            });
+      // const startDate = new Date('2/15/2023');
+      // for (let i = 1; i < 80; i++) {
+      //   const date = new Date(startDate.getTime() + (i * 24 * 60 * 60 * 1000));
+      //   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+      //   this.email = {
+      //     id: i,
+      //     from: `Esmail Mahmoud Hassan m3rf4 el esm b3t el tholathy`,
+      //     to: `Youssif Khaled Ahmed Abdelaziz Mohamed`,
+      //     subject: `OOP Assignment Assesment w klam ktyr 34an n5ouf el overflow`,
+      //     body: `E7na gamdyn f45 ana delwa2ty 48al 3lCompose aho w m7fouz 48al 3llogin page w 4o8l 3aly w 2rbna n5ls`,
+      //     date: formattedDate,
+      //     priority: 'High',
+      //     attachments: []
+      //   };
+      //   this.emails.push(this.email);
+      // }
+    },
+    toggleMultiSelect() {
+      console.log(this.selectedEmails);
+      this.multiselect = !this.multiselect;
+      this.selectedEmails = {};
+    }
+  },
 }
 </script>
 
 <style>
-#app{
+#app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -124,13 +146,15 @@ export default {
   color: #2c3e50;
   width: 100%;
 }
-body{
+
+body {
   margin: 0;
   padding-top: 0%;
   height: 100%;
   width: 100%;
 }
-footer{
+
+footer {
   background-color: rgba(3, 4, 5, 0.763);
   height: 5vh;
   color: whitesmoke;
@@ -139,6 +163,7 @@ footer{
   align-items: center;
   font-size: 2vh;
 }
+
 .Title {
   font-size: 3.1vh;
   font-weight: bold;
@@ -150,6 +175,7 @@ footer{
   margin: 0;
   display: flex;
 }
+
 .logout {
   background-color: transparent;
   border: none;
@@ -157,6 +183,7 @@ footer{
   font-size: 2vh;
   cursor: pointer;
 }
+
 .logout:hover {
   color: black;
 }

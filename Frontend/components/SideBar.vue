@@ -13,15 +13,7 @@
                     class="sidebar-button"><i class="pi pi-trash icon"></i>Trash</button>
         </i>
         <div class="userFolders">
-            <button v-for="folder in Addedfolders" :key="folder" class="userFolder">
-                <div class="folderName">
-                    {{ folder.name }}
-                </div>
-                <div class="folderOptions">
-                    <i class="pi pi-trash deleteFolder icon" @click="deleteFolder(folder.id)"></i>
-                    <i class="pi pi-file-edit renameFolder icon" @click="RenameFolder(folder.id)"></i>
-                </div>
-            </button>
+            <button v-for="folder in Addedfolders" :key="folder" class="userFolder">{{ folder }}</button>
         </div>
         <button class="sidebar-button add-button" @click="addFolder"><i class="pi pi-plus-circle  icon"></i>Add Folder</button>
     </div>
@@ -34,28 +26,12 @@ export default {
     data() {
         return {
             Addedfolders: [],
-            folderId: 1,
         };
     },
     methods: {
-        addFolder(){
-            let folder = {
-                name: prompt("Please enter folder name","New Folder("+this.folderId+")"),
-                id: this.folderId,
-            };
-            if(folder.name === null){
-                return;
-            }
-            this.folderId++;
-            this.Addedfolders.push({...folder});
+        addFolder() {
+            this.Addedfolders.push('New Folder');
         },
-        deleteFolder(id){
-            this.Addedfolders = this.Addedfolders.filter(folder => folder.id !== id);
-        },
-        RenameFolder(id){
-            let folder = this.Addedfolders.find(folder => folder.id === id);
-            folder.name = prompt("Please enter folder name",folder.name);
-        }
     },
 }
 </script>
@@ -121,7 +97,6 @@ export default {
     width: 100%;
     background-color: transparent;
     padding: 1vh;
-    height: 5vh;
     border-top-right-radius: 30px;
     border-bottom-right-radius: 30px;
     border: none;
@@ -129,44 +104,10 @@ export default {
     font-size: 1.2vw;
     text-align: left;
     cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
 }
 .userFolder:hover {
     background-color: rgba(7, 10, 10, 0.215);
     color: black;
-}
-.folderName {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    width: 17vw;
-    overflow: hidden;
-    white-space: nowrap;
-}
-.userFolder:hover .folderName {
-    width: 12vw;
-}
-.folderOptions {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    width: 5vw;
-}
-.deleteFolder:hover {
-    color: red;
-}
-.renameFolder:hover {
-    color: green;
-}
-.userFolder .folderOptions {
-    display: none;
-}
-.userFolder:hover .folderOptions {
-    display: block;
 }
 .add-button {
     margin-top: auto;
