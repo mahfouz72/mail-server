@@ -1,21 +1,21 @@
 <template>
     <div class="mainboard">
         <div class="email-list">
-            <div class="email" v-for="(email, index) in paginatedEmails" :key="index">
+            <div class="email" v-for="(email, index) in paginatedEmails" :key="index" @click="this.$emit('openMail',email.id)">
                 <div v-if="multiselect" class="checkbox">
-                    <input type="checkbox" :checked="selectedEmails[email.id]" @change="selectEmail(email)">
+                    <input type="checkbox" :checked="selectedEmails[email.id]" @click.stop="selectEmail(email)">
                 </div>
                 <div class="user">
                     <div v-for="line in getEmailUser(email)" :key="line.value">
                         <label style="font-weight: bold;cursor: pointer;">{{ line.label }}</label>
-                        <i>{{ (line.value) }}</i>
+                        <i>{{ chopString(line.value[0], 28-line.label.length) }}</i>
                     </div>
                 </div>
                 <div class="content">
                     <i><label style="font-weight: bold;cursor: pointer;">Subject: </label>{{ chopString(email.subject,25) }}</i>
                     <i><label style="font-weight: bold;cursor: pointer;">Body: </label>{{ chopString(email.body,85) }}</i>
                 </div>
-                <div class="date">{{ (email.dateTime) }}</div>
+                <div class="date">{{ email.date }}</div>
             </div>
         </div>
         <div class="pagination">
@@ -38,6 +38,14 @@ export default {
             emailsPerPage: 10,
             compselectedEmails: {},
         };
+    },
+    watch: {
+        multiselect(newVal) {
+            if(!newVal){
+                this.compselectedEmails = {};
+                this.$emit('update:selectedEmails', this.compselectedEmails);
+            }
+        }
     },
     computed: {
         paginatedEmails() {
@@ -79,7 +87,6 @@ export default {
             }
         },
         chopString(string, length){
-            //if(length>1) return string
             if(string.length > length){
                 return `${string.slice(0, length)}...`;
             }else{
