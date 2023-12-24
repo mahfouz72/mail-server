@@ -56,4 +56,9 @@ public class UserService {
     }
 
 
+    public boolean logIn(String email, String userName) {
+        if(getUserByEmail(email) == null)
+            return false;
+        return getUserByEmail(email).getUserName().equals(userName);
+    }
 }

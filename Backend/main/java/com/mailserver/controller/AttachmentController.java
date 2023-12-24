@@ -14,8 +14,12 @@ import java.util.Collection;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 public class AttachmentController {
-    @Autowired
-    AttachmentService attachmentService =new AttachmentService();
+
+    private AttachmentService attachmentService;
+
+    public AttachmentController(AttachmentService attachmentService) {
+        this.attachmentService = attachmentService;
+    }
 
     @GetMapping("/attachments")
     public Collection<Attachment> getAll(){
@@ -29,7 +33,7 @@ public class AttachmentController {
 
     @DeleteMapping("/detach/{id}")
     public void detach(@PathVariable String id){
-        Attachment attachment= attachmentService.remove(id);
+        Attachment attachment = attachmentService.remove(id);
         if(attachment == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 

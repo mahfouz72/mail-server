@@ -1,6 +1,9 @@
 package com.mailserver.model;
 
 import com.mailserver.model.mail.Mail;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -8,9 +11,14 @@ import java.util.List;
 
 @Component
 public class User {
+    @NotBlank(message = "Username cannot be empty")
     private String userName;
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Invalid email format")
+    @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+com$",
+            message = "Invalid email format. Only 'com' TLD is allowed.")
     private String email;
-    private String password;
+   // private String password;
     private List<Mail> sent;
     private List<Mail> inbox;
     private List<Contact> contacts;
@@ -75,13 +83,13 @@ public class User {
         this.contacts = contacts;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
 
     public List<Mail> getTrash() {
         return trash;

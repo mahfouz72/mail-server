@@ -1,5 +1,8 @@
 package com.mailserver.model.mail;
 
+import com.mailserver.model.Attachment;
+
+import java.security.PublicKey;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,7 +14,7 @@ public class MailBuilder {
     private String body;
     private LocalDateTime dateTime;
     private Priority priority;
-    //TODO:  attachments
+    private List<Attachment> attachments;
 
     public MailBuilder(){
     }
@@ -37,6 +40,10 @@ public class MailBuilder {
     }
     public MailBuilder setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
+        return this;
+    }
+    public MailBuilder setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
         return this;
     }
     public MailBuilder setPriority(Priority priority) {
@@ -73,5 +80,9 @@ public class MailBuilder {
 
     public Priority getPriority() {
         return priority;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
     }
 }

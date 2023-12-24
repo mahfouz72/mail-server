@@ -2,6 +2,7 @@ package com.mailserver.controller;
 
 import com.mailserver.model.User;
 import com.mailserver.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,14 +13,13 @@ public class UserController {
 
 
     @PostMapping("/user/register")
-    public User register(@RequestBody User user){
+    public User register(@Valid @RequestBody User user){
         return userService.addUser(user);
     }
 
     @GetMapping("/user/login")
-    public boolean logIn(@RequestParam String email,@RequestParam String password){
-        User user = userService.getUserByEmail(email.toLowerCase());
-        return user != null && user.getPassword().equalsIgnoreCase(password);
+    public boolean logIn(@RequestBody User user){
+          return userService.logIn(user.getEmail(),user.getUserName());
     }
 
     @GetMapping("/user")

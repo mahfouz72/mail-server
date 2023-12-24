@@ -1,5 +1,6 @@
 package com.mailserver.model.mail;
 
+import com.mailserver.model.Attachment;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ public class Mail {
     private String body;
     private LocalDateTime dateTime;
     private Priority priority;
-    //TODO:  attachments
+    List<Attachment> attachments;
 
     public Mail(){
         this.to = new ArrayList<>();
@@ -36,6 +37,7 @@ public class Mail {
         this.body = mailBuilder.getBody();
         this.dateTime = mailBuilder.getDateTime();
         this.priority = mailBuilder.getPriority();
+        this.attachments = mailBuilder.getAttachments();
     }
 
     public String getFrom() {
@@ -90,7 +92,16 @@ public class Mail {
         return id;
     }
 
+
     public void setId(String id) {
         this.id = id;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
 }
