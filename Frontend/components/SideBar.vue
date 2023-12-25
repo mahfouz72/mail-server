@@ -18,8 +18,8 @@
                     {{ folder.name }}
                 </div>
                 <div class="folderOptions">
-                    <i class="pi pi-trash deleteFolder icon" @click="deleteFolder(folder.id)"></i>
-                    <i class="pi pi-file-edit renameFolder icon" @click="RenameFolder(folder.id)"></i>
+                    <i class="pi pi-trash deleteFolder icon" @click="deleteFolder(folder.name)"></i>
+                    <i class="pi pi-file-edit renameFolder icon" @click="RenameFolder(folder.name)"></i>
                 </div>
             </button>
         </div>
@@ -34,27 +34,37 @@ export default {
     data() {
         return {
             Addedfolders: [],
-            folderId: 1,
         };
     },
     methods: {
         addFolder(){
             let folder = {
-                name: prompt("Please enter folder name","New Folder("+this.folderId+")"),
-                id: this.folderId,
+                name: prompt("Please enter folder name","New Folder"),
             };
+            let baseName = folder.name;
+            let i = 1;
+            while(this.Addedfolders.find(f => f.name === folder.name)){
+                folder.name = `${baseName}(${i})`;
+                i++;
+            }
             if(folder.name === null){
                 return;
             }
-            this.folderId++;
             this.Addedfolders.push({...folder});
         },
-        deleteFolder(id){
-            this.Addedfolders = this.Addedfolders.filter(folder => folder.id !== id);
+        deleteFolder(name){
+            this.Addedfolders = this.Addedfolders.filter(folder => folder.name !== name);
         },
-        RenameFolder(id){
-            let folder = this.Addedfolders.find(folder => folder.id === id);
-            folder.name = prompt("Please enter folder name",folder.name);
+        RenameFolder(name){
+            let folder = this.Addedfolders.find(folder => folder.name === name);
+            let newName = prompt("Please enter new folder name",folder.name);
+            let baseName = newName;
+            let i = 1;
+            while(this.Addedfolders.find(f => f.name === newName)){
+                newName = `${baseName}(${i})`;
+                i++;
+            }
+            folder.name = newName;
         }
     },
 }
@@ -150,11 +160,12 @@ export default {
     width: 12vw;
 }
 .folderOptions {
+    position: relative;
+    left: 0.2vw;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    width: 5vw;
 }
 .deleteFolder:hover {
     color: red;

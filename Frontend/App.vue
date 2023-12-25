@@ -45,9 +45,9 @@ export default {
     components: {WelcomePage, NavBar, SideBar, MainBoard, ComposeWindow, ViewMail},
     data() {
       return {
-        username: 'user1',
-        useremail: 'user1@cse.com',
-        userLoggedIn: true,
+        username: '',
+        useremail: '',
+        userLoggedIn: false,
         currentFolder: '',
         emails: [],
         email: {

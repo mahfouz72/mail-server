@@ -16,6 +16,10 @@
                     <i><label style="font-weight: bold;cursor: pointer;">Body: </label>{{ chopString(email.body,85) }}</i>
                 </div>
                 <div class="date">{{ email.date }}</div>
+                <div v-if="!multiselect" class="emailOptions">
+                    <i class="pi pi-folder-open moveEmail icon"></i>
+                    <i class="pi pi-trash deleteEmail icon"></i>
+                </div>    
             </div>
         </div>
         <div class="pagination">
@@ -165,6 +169,37 @@ export default {
     justify-content: center;
     width: 8%;
     height: 40%;
+}
+.emailOptions {
+    position: relative;
+    left: 5.5vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 5%;
+    height: 100%;
+    color: black;
+}
+.moveEmail {
+    font-size: 3.1vh;
+    padding: 1vh;
+}
+.deleteEmail {
+    font-size: 3vh;
+    padding: 1vh;
+}
+.moveEmail:hover {
+    color: teal;
+}
+.deleteEmail:hover {
+    color: red;
+}
+.email .emailOptions {
+    display: none;
+}
+.email:hover .emailOptions{
+    display: flex;
 }
 .checkbox {
     display: flex;
