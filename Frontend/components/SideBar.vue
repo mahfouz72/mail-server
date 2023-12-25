@@ -18,8 +18,8 @@
                     {{ folder.name }}
                 </div>
                 <div class="folderOptions">
-                    <i class="pi pi-trash deleteFolder icon" @click="deleteFolder(folder.name)"></i>
-                    <i class="pi pi-file-edit renameFolder icon" @click="RenameFolder(folder.name)"></i>
+                    <i class="pi pi-trash deleteFolder icon" @click.stop="deleteFolder(folder.name)"></i>
+                    <i class="pi pi-file-edit renameFolder icon" @click.stop="RenameFolder(folder.name)"></i>
                 </div>
             </button>
         </div>
@@ -30,7 +30,7 @@
 <script>
 export default {
     name: 'SideBar',
-    props: ['currentFolder'],
+    props: ['currentFolder','useremail'],
     data() {
         return {
             Addedfolders: [],
@@ -51,9 +51,22 @@ export default {
                 return;
             }
             this.Addedfolders.push({...folder});
+            console.log(this.useremail)
+            fetch('http://localhost:8080/folder/' + this.useremail+"/"+folder.name, {
+                method: "POST",
+            }).then(
+                console.log("Folder created successfully")
+            )
         },
         deleteFolder(name){
             this.Addedfolders = this.Addedfolders.filter(folder => folder.name !== name);
+            console.log(this.useremail)
+            console.log(name)
+            fetch('http://localhost:8080/folder/' + this.useremail+"/"+name, {
+                method: "DELETE",
+            }).then(
+                console.log("Folder Deleted successfully")
+            )
         },
         RenameFolder(name){
             let folder = this.Addedfolders.find(folder => folder.name === name);

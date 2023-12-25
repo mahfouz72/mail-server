@@ -2,7 +2,7 @@
     <div class="welcomepage">
         <div class="regBox">
             <h1 style="color: black;cursor:default;">Welcome</h1>
-            <form>
+            <form @submit.prevent>
                 <div class="form-group">
                     <input type="text" id="username" v-model="username" placeholder="Username" />
                 </div>

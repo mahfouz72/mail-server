@@ -17,7 +17,8 @@
     <NavBar :currentFolder="currentFolder" :multiselect="multiselect" :composing="composing"
       @toggleMultiSelect="toggleMultiSelect" @compose="composing = !composing" />
     <div style="display: flex;">
-      <SideBar :currentFolder="currentFolder" :useremail="useremail" @open="open" @openContacts="openContacts" @openDraft="openDraft" />
+      <SideBar :currentFolder="currentFolder" :useremail="useremail" @open="open" @openContacts="openContacts"
+        @openDraft="openDraft" />
       <div>
         <MainBoard v-if="!composing && windowState === 'viewFolders'" @openMail="openMail" :emails="emails"
           :currentFolder="currentFolder" :multiselect="multiselect" v-model:selectedEmails="selectedEmails"></MainBoard>
@@ -42,71 +43,72 @@ import ViewMail from './components/ViewMail.vue';
 import 'primeicons/primeicons.css';
 
 export default {
-    name: "App",
-    components: {WelcomePage, NavBar, SideBar, MainBoard, ComposeWindow, ViewMail},
-    data() {
-      return {
-        username: '',
-        useremail: '',
-        userLoggedIn: false,
-        currentFolder: '',
-        emails: [],
-        email: {
-          id: '',
-          from: '',
-          to: '',
-          subject: '',
-          body: '',
-          date: '',
-          priority: '',
-          attachments:[]
-        },
-        multiselect: false,
-        selectedEmails: {},
-        composing: false,
-        windowState: 'viewFolders'
-      }
-    },
-    methods: {
-      login(username, useremail){
-        this.username = username;
-        this.useremail = useremail;
-        this.userLoggedIn = true;
+  name: "App",
+  components: { WelcomePage, NavBar, SideBar, MainBoard, ComposeWindow, ViewMail },
+  data() {
+    return {
+      username: '',
+      useremail: '',
+      userLoggedIn: false,
+      currentFolder: '',
+      emails: [],
+      email: {
+        id: '',
+        from: '',
+        to: '',
+        subject: '',
+        body: '',
+        date: '',
+        priority: '',
+        attachments: []
       },
-      signUp(username, useremail){
-        this.username = username;
-        this.useremail = useremail;
-        const userRequest = {
-          userName: username,
-          email:useremail,
-        }
-        fetch(`http://localhost:8080/user/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(userRequest),
-        })
+      multiselect: false,
+      selectedEmails: {},
+      composing: false,
+      windowState: 'viewFolders'
+    }
+  },
+  methods: {
+    login(username, useremail) {
+      this.username = username;
+      this.useremail = useremail;
+      this.userLoggedIn = true;
+    },
+    signUp(username, useremail) {
+      const userRequest = {
+        userName: username,
+        email: useremail,
+      };
+      fetch('http://localhost:8080/user/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userRequest),
+      })
         .then(res => res.json())
         .then(data => {
-          console.log(JSON.stringify(data))
+          if (data.errors) {
+            console.log(data.errors[0].defaultMessage);
+          } else {
+            this.username = username;
+            this.useremail = useremail;
+            this.userLoggedIn = true;
+          }
         })
-        .catch(error => {
-          console.error('Error:', error)
-        });
-        this.userLoggedIn = true;
-      },
-      logout(){
-        this.username = '';
-        this.useremail = '';
-        this.userLoggedIn = false;
-      },
-      open(folder){
-        console.log(this.emails);
-        this.currentFolder = folder;
-        this.emails = [];
-        fetch('http://localhost:8080/'+this.useremail+'/'+folder.toLowerCase(), { 
-          method: 'GET',
-          headers: {'Content-Type': 'application/json'},
-        })
+        .catch(error => console.error('Error:', error));
+    },
+    logout() {
+      this.username = '';
+      this.useremail = '';
+      this.userLoggedIn = false;
+    },
+    open(folder) {
+      console.log(this.emails);
+      this.currentFolder = folder;
+      this.emails = [];
+      fetch('http://localhost:8080/' + this.useremail + '/' + folder.toLowerCase(), {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      })
         .then(res => res.json())
         .then(data => {
           console.log(JSON.stringify(data))
