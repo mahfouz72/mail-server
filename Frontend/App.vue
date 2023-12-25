@@ -15,7 +15,8 @@
       </span>
     </div>
     <NavBar :currentFolder="currentFolder" :multiselect="multiselect" :composing="composing"
-      @toggleMultiSelect="toggleMultiSelect" @compose="composing = !composing" />
+      @toggleMultiSelect="toggleMultiSelect" @compose="composing = !composing"
+      @sort="sort"/>
     <div style="display: flex;">
       <SideBar :currentFolder="currentFolder" :useremail="useremail" @open="open" @openContacts="openContacts"
         @openDraft="openDraft" />
@@ -146,6 +147,35 @@ export default {
     openMail(id) {
       this.windowState = 'viewMail';
       this.email = this.emails.find(email => email.id === id);
+    },
+    sort(option) {
+      fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}?sortingCriteria=${option}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(JSON.stringify(data))
+          if (data.length > 0) {
+            this.emails = [];
+            data.forEach(email => {
+              this.emails.push({
+                id: email.id,
+                from: email.from,
+                to: email.to,
+                subject: email.subject,
+                body: email.body,
+                date: email.date,
+                priority: email.priority,
+                attachments: email.attachments
+              })
+            });
+          }
+          console.log(this.emails)
+        })
+        .catch(error => {
+          console.error('Error:', error)
+        });
     }
   },
 }
