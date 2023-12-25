@@ -3,6 +3,7 @@ package com.mailserver.service;
 import com.mailserver.model.Folder;
 import com.mailserver.model.User;
 import com.mailserver.model.mail.Mail;
+import com.mailserver.service.filter.*;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -69,4 +70,17 @@ public class MailService {
        return mails;
     }
 
+    public List<Mail> filterMails(String email, String folderName, String filterCriteria, String filterValue) {
+
+        List<Mail> mails = getMailsByFolderName(email,folderName);
+        Filter filter;
+
+        switch (filterCriteria.toLowerCase()){
+            case "subject" -> filter = new SubjectFilter(filterValue);
+            case "sender" -> filter = new SenderFilter(filterValue);
+            case  "receiver" -> filter = new ReceiverFilter(filterValue);
+            default -> filter = new BodyFilter(filterValue);
+        }
+        return filter.filter(mails);
+    }
 }

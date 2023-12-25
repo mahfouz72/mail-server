@@ -21,4 +21,9 @@ public class FolderService {
                 .filter(folder -> folder.getName().equalsIgnoreCase(folderName))
                 .findFirst().orElse(null);
     }
+
+    public void renameFolder(String email, String oldName, String newName) {
+        Folder folder = getFolder(email, oldName);
+        folder.setName(newName);
+    }
 }

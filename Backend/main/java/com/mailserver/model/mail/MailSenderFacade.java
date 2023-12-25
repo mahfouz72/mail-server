@@ -2,9 +2,9 @@ package com.mailserver.model.mail;
 
 import com.mailserver.model.Attachment;
 import com.mailserver.model.User;
+import com.mailserver.service.AttachmentService;
 import com.mailserver.service.DraftService;
 import com.mailserver.service.UserService;
-import com.mailserver.service.AttachmentService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,12 +17,11 @@ public class MailSenderFacade {
     private DraftService draftService;
     private AttachmentService attachmentService;
 
-    public MailSenderFacade(DraftService draftService, AttachmentService attachmentService) {
-
+    public MailSenderFacade(DraftService draftService,AttachmentService attachmentService) {
         this.draftService = draftService;
-        this.attachmentService=attachmentService;
+        this.attachmentService = attachmentService;
     }
-    public  Mail sendMail(Mail mail, boolean wasDraft, ArrayList<String> attachmentIds){
+    public  Mail sendMail(Mail mail,boolean wasDraft,List<String> attachmentIds){
 
         if(wasDraft){
             draftService.deleteDraft(mail.getFrom(),mail.getId());
@@ -30,14 +29,17 @@ public class MailSenderFacade {
 
         mail.setDateTime(LocalDateTime.now().withNano(0));
         mail.setId(Long.toString(System.currentTimeMillis()));
+
         ArrayList<Attachment> attachments=new ArrayList<Attachment>();
         for (String attachmentId : attachmentIds) {
             attachments.add(attachmentService.get(attachmentId));
             attachmentService.remove(attachmentId);
         }
         mail.setAttachments(attachments);
+
         String from = mail.getFrom();
         List<String> to = mail.getTo();
+
 
         for(String email:to){
             User receiver = userService.getUserByEmail(email);

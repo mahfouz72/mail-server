@@ -1,12 +1,10 @@
 package com.mailserver.controller;
 
 import com.mailserver.service.FolderService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class FolderController {
     private FolderService folderService;
     public FolderController(FolderService folderService){
@@ -19,5 +17,10 @@ public class FolderController {
     @DeleteMapping("/folder/{email}/{folderName}")
     public void deleteFolder(@PathVariable  String email, @PathVariable String folderName){
         folderService.deleteFolder(email,folderName);
+    }
+
+    @PostMapping("/folder/{email}/{oldName}/{newName}")
+    public void renameFolder(@PathVariable  String email, @PathVariable String oldName,@PathVariable String newName){
+        folderService.renameFolder(email,oldName,newName);
     }
 }

@@ -6,9 +6,11 @@ import com.mailserver.service.DraftService;
 import com.mailserver.service.MailService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class MailController {
     private MailService mailService;
     private MailSenderFacade mailSenderFacade;
@@ -27,10 +29,19 @@ public class MailController {
             return mailService.getMails(email,folderName,sortingCriteria);
     }
 
-    @PostMapping("/compose")
-    public Mail sendMail(@RequestBody Mail mail, @RequestParam(required = false) boolean wasDraft){
-        return mailSenderFacade.sendMail(mail,wasDraft);
+    @GetMapping("{email}/{folderName}/filter")
+    public List<Mail> filterMails(@PathVariable String email,@PathVariable String folderName,
+                                  @RequestParam String filterCriteria,@RequestParam String filterValue){
+
+        return mailService.filterMails(email,folderName,filterCriteria,filterValue);
     }
+
+    @PostMapping("/compose")
+    public Mail sendMail(@RequestBody Mail mail, @RequestParam(required = false) boolean wasDraft,
+                         @RequestParam ArrayList<String> attachmentIds){
+        return mailSenderFacade.sendMail(mail,wasDraft,attachmentIds);
+    }
+
     @PostMapping("{email}/{fromFolder}/{toFolder}/{id}")
     public List<Mail> moveMail(@PathVariable String email,@PathVariable String fromFolder,
                                @PathVariable String toFolder,@PathVariable String id){

@@ -17,7 +17,7 @@ public class Mail {
     private String body;
     private LocalDateTime dateTime;
     private Priority priority;
-    List<Attachment> attachments;
+    private List<Attachment> attachments;
 
     public Mail(){
         this.to = new ArrayList<>();

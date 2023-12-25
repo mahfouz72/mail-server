@@ -16,9 +16,9 @@ public class User {
     @NotBlank(message = "Email cannot be blank")
     @Email(message = "Invalid email format")
     @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+com$",
-            message = "Invalid email format. Only 'com' TLD is allowed.")
+            message = "Invalid email format.")
     private String email;
-   // private String password;
+   private String password;
     private List<Mail> sent;
     private List<Mail> inbox;
     private List<Contact> contacts;
@@ -83,13 +83,13 @@ public class User {
         this.contacts = contacts;
     }
 
-//    public String getPassword() {
-//        return password;
-//    }
-//
-//    public void setPassword(String password) {
-//        this.password = password;
-//    }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public List<Mail> getTrash() {
         return trash;
