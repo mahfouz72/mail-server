@@ -8,7 +8,7 @@
                 <div class="user">
                     <div v-for="line in getEmailUser(email)" :key="line.value">
                         <label style="font-weight: bold;cursor: pointer;">{{ line.label }}</label>
-                        <i>{{ chopString(line.value[0], 28-line.label.length) }}</i>
+                        <i>{{ line.value }}</i>
                     </div>
                 </div>
                 <div class="content">

@@ -2,7 +2,7 @@
     <div class="compose">
         <table class="compose">
             <thead>
-                <th class="title">New Message</th>
+                <th class="title">New Email</th>
                 <th class="close" @click="this.$emit('closeWindow')">x</th>
             </thead>
             <tr>
@@ -28,7 +28,7 @@
                         <button class="pi pi-times" @click="detach(attchmnt.id)"></button>
                     </div>
                 </div>
-                <button class="pi pi-send send"></button>
+                <button class="pi pi-send send" @click="sendmail()"></button>
             </tr>
         </table>
     </div>
@@ -38,6 +38,7 @@
 export default {
     name: 'ComposeWindow',
     emits:['closeComposeWindow'],
+    props: ['useremail'],
     data() {
         return {
             toField: '',
@@ -48,16 +49,39 @@ export default {
                 name: ''
             },
             attachments: [],
-            priority: 'medium',
-            priorityOptions: ['urgent','high', 'medium', 'low']
+            priority: 'Medium',
+            priorityOptions: ['Urgent','High', 'Medium', 'Low'],
+            wasDraft:'false',
         }
     },
     methods: {
+        async sendmail() {
+             const mailRequest = {
+                from: this.useremail,
+                to: [this.toField],
+                subject: this.subjectField,
+                body: this.bodyField,
+                priority: this.priority,
+            };
+            console.log("mail reuest: "+JSON.stringify(mailRequest))
+            fetch(`http://localhost:8080/compose?wasDraft=${this.wasDraft}`,{ 
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(mailRequest),
+            })
+            .then(res => res.json())
+            .then(data => {
+              console.log(JSON.stringify(data))
+            })
+            .catch(error => {
+              console.error('Error:', error)
+            });
+        },                
         async uploadfile() {            
             let fileInput = document.getElementById('fileupload');
             let formData = new FormData();
             formData.append("data", fileInput.files[0]);
-            await fetch('http://localhost:8080/attach', { 
+            await fetch('http://localhost:8080/attach',{ 
                 method: "POST",
                 body: formData
             }).then(result => result.json())
@@ -81,8 +105,8 @@ export default {
             fetch('http://localhost:8080/detach/' + id,{
                 method: "DELETE",
             }).then(res => {
-                for (let i = 0; i < this.attachments.length; i++) {
-                    if (this.attachments[i].id === id) {
+                for(let i = 0; i < this.attachments.length; i++){
+                    if(this.attachments[i].id === id){
                         this.attachments.splice(i, 1);
                     }
                 }
@@ -91,17 +115,16 @@ export default {
             })
         },
         getPriorityColor(priority) {
-            if (priority === 'urgent') {
+            if(priority === 'Urgent'){
                 return 'red';
-            } else if (priority === 'high') {
+            }else if(priority === 'High'){
                 return 'orange';
-            } else if (priority === 'medium') {
+            }else if(priority === 'Medium'){
                 return 'blue';
-            } else if (priority === 'low') {
+            }else if(priority === 'Low'){
                 return 'grey';
             }
         }
-
     }
 }
 </script>

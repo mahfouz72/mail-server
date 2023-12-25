@@ -18,11 +18,11 @@
     </div>
     <NavBar :currentFolder="currentFolder" :multiselect="multiselect" :composing="composing" @toggleMultiSelect="toggleMultiSelect" @compose="composing = !composing"/>
     <div style="display: flex;">
-      <SideBar :currentFolder = "currentFolder" @open="open"/>
+      <SideBar :currentFolder = "currentFolder" @open="open" @openContacts="openContacts" @openDraft="openDraft"/>
       <div>
         <MainBoard v-if="!composing && windowState==='viewFolders'" @openMail="openMail" :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect" v-model:selectedEmails="selectedEmails"></MainBoard>
         <ViewMail v-else-if="!composing && windowState==='viewMail'" @closeViewMail="windowState='viewFolders'" :email="email"/>
-        <ComposeWindow v-else @closeWindow="composing = false"/>
+        <ComposeWindow v-else @closeWindow="composing = false" :useremail="useremail"/>
       </div>
     </div>
     <footer>
@@ -99,6 +99,7 @@ export default {
         this.userLoggedIn = false;
       },
       open(folder){
+        console.log(this.emails);
         this.currentFolder = folder;
         this.emails = [];
         fetch('http://localhost:8080/'+this.useremail+'/'+folder.toLowerCase(), { 
@@ -108,12 +109,31 @@ export default {
         .then(res => res.json())
         .then(data => {
           console.log(JSON.stringify(data))
-          this.emails=data
+          if(data.length > 0){
+            data.forEach(email => {
+              this.emails.push({
+                id: email.id,
+                from: email.from,
+                to: email.to,
+                subject: email.subject,
+                body: email.body,
+                date: email.date,
+                priority: email.priority,
+                attachments: email.attachments
+              })
+            });
+          }
           console.log(this.emails)
         })
         .catch(error => {
           console.error('Error:', error)
         });
+      },
+      openContacts(){
+        this.windowState = 'viewMail';
+      },
+      openDraft(){
+        this.windowState = 'viewMail';
       },
       toggleMultiSelect(){
         console.log(this.selectedEmails);
