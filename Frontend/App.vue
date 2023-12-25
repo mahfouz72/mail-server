@@ -42,87 +42,71 @@ import ViewMail from './components/ViewMail.vue';
 import 'primeicons/primeicons.css';
 
 export default {
-  name: "App",
-  components: { WelcomePage, NavBar, SideBar, MainBoard, ComposeWindow, ViewMail },
-  data() {
-    return {
-      username: 'user1',
-      useremail: 'user1@cse.com',
-      userLoggedIn: true,
-      currentFolder: '',
-      emails: [],
-      email: {
-        id: '',
-        from: '',
-        to: '',
-        subject: '',
-        body: '',
-        date: '',
-        priority: '',
-        attachments: []
-      },
-      multiselect: false,
-      selectedEmails: {},
-      composing: false,
-      windowState: 'viewFolders'
-    }
-  },
-  methods: {
-    login(username, useremail) {
-      this.username = username;
-      this.useremail = useremail;
-      this.userLoggedIn = true;
-    },
-    signUp(username, useremail) {
-      this.username = username;
-      this.useremail = useremail;
-      const userRequest = {
-        userName: username,
-        email: useremail,
+    name: "App",
+    components: {WelcomePage, NavBar, SideBar, MainBoard, ComposeWindow, ViewMail},
+    data() {
+      return {
+        username: '',
+        useremail: '',
+        userLoggedIn: false,
+        currentFolder: '',
+        emails: [],
+        email: {
+          id: '',
+          from: '',
+          to: '',
+          subject: '',
+          body: '',
+          date: '',
+          priority: '',
+          attachments:[]
+        },
+        multiselect: false,
+        selectedEmails: {},
+        composing: false,
+        windowState: 'viewFolders'
       }
-      fetch('http://localhost:8080/user/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userRequest),
-      }).then(res => {
-          if (!res.ok) {
-            return res.json().then(error => {
-              console.log(error.errors[0].defaultMessage)
-            })
-          }
-          this.userLoggedIn = true;
-          //return res.json();
-        }).then(data => {
-          console.log(data);
+    },
+    methods: {
+      login(username, useremail){
+        this.username = username;
+        this.useremail = useremail;
+        this.userLoggedIn = true;
+      },
+      signUp(username, useremail){
+        this.username = username;
+        this.useremail = useremail;
+        const userRequest = {
+          userName: username,
+          email:useremail,
+        }
+        fetch(`http://localhost:8080/user/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userRequest),
         })
-      // fetch(`http://localhost:8080/user/register`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(userRequest),
-      // })
-      // .then(res => res.json())
-      // .then(data => {
-      //   console.log(JSON.stringify(data))
-
-      // })
-      // .catch(error => {
-      //   console.error('Error:', JSON.stringify(error))
-      // });
-      
-    },
-    logout() {
-      this.username = '';
-      this.useremail = '';
-      this.userLoggedIn = false;
-    },
-    open(folder) {
-      console.log(this.emails);
-      this.currentFolder = folder;
-      this.emails = [];
-      fetch('http://localhost:8080/' + this.useremail + '/' + folder.toLowerCase(), {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(JSON.stringify(data))
+        })
+        .catch(error => {
+          console.error('Error:', error)
+        });
+        this.userLoggedIn = true;
+      },
+      logout(){
+        this.username = '';
+        this.useremail = '';
+        this.userLoggedIn = false;
+      },
+      open(folder){
+        console.log(this.emails);
+        this.currentFolder = folder;
+        this.emails = [];
+        fetch('http://localhost:8080/'+this.useremail+'/'+folder.toLowerCase(), { 
+          method: 'GET',
+          headers: {'Content-Type': 'application/json'},
+        })
         .then(res => res.json())
         .then(data => {
           console.log(JSON.stringify(data))

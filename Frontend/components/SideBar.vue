@@ -40,45 +40,21 @@ export default {
     methods: {
         addFolder() {
             let folder = {
-                name: prompt("Please enter folder name", "New Folder"),
+                name: prompt("Please enter folder name","New Folder("+this.folderId+")"),
+                id: this.folderId,
             };
-            let baseName = folder.name;
-            let i = 1;
-            while (this.Addedfolders.find(f => f.name === folder.name)) {
-                folder.name = `${baseName}(${i})`;
-                i++;
-            }
-            if (folder.name === null) {
+            if(folder.name === null){
                 return;
             }
-            this.Addedfolders.push({ ...folder });
-            fetch('http://localhost:8080/folder/' + this.useremail + "/" + folder.name, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                })
-                .then(console.log("folder created sucessfully"))
-                .catch(error => {
-                    console.error('Error:', error)
-                });
+            this.folderId++;
+            this.Addedfolders.push({...folder});
         },
-        deleteFolder(name) {
-            this.Addedfolders = this.Addedfolders.filter(folder => folder.name !== name);
-            fetch('http://localhost:8080/folder/' + this.useremail+"/"+name, {
-                method: "DELETE",
-            }).then(
-                console.log("deleted successfully")
-            )
+        deleteFolder(id){
+            this.Addedfolders = this.Addedfolders.filter(folder => folder.id !== id);
         },
-        RenameFolder(name) {
-            let folder = this.Addedfolders.find(folder => folder.name === name);
-            let newName = prompt("Please enter new folder name", folder.name);
-            let baseName = newName;
-            let i = 1;
-            while (this.Addedfolders.find(f => f.name === newName)) {
-                newName = `${baseName}(${i})`;
-                i++;
-            }
-            folder.name = newName;
+        RenameFolder(id){
+            let folder = this.Addedfolders.find(folder => folder.id === id);
+            folder.name = prompt("Please enter folder name",folder.name);
         }
     },
 }

@@ -26,9 +26,9 @@
                 <button class="pi pi-paperclip attach" @click="this.$refs.fileInput.click();"></button>
                 <div class="attchList">
                     <div v-for="attchmnt in attachments" :key="attchmnt" class="Attachment">
-                        <span @click="download(attchmnt.id)" style="color.hover: blue; cursor: pointer; ">{{ attchmnt.name
+                        <span class="attchName" @click="download(attchmnt.id)">{{ chopString(attchmnt.name,11)
                         }}</span>
-                        <button class="pi pi-times" @click="detach(attchmnt.id)"></button>
+                        <button class="pi pi-times attchRemove" @click="detach(attchmnt.id)"></button>
                     </div>
                 </div>
                 <button class="pi pi-send send" @click="sendmail()"></button>
@@ -51,7 +51,9 @@ export default {
                 id: '',
                 name: ''
             },
-            attachments: [],
+            attachments: [{
+                id: '',
+                name: 'HEREEEEEEEEEEEEEE'}],
             priority: 'Medium',
             priorityOptions: ['Urgent', 'High', 'Medium', 'Low'],
             wasDraft: false,
@@ -64,8 +66,7 @@ export default {
                 to: [this.toField],
                 subject: this.subjectField,
                 body: this.bodyField,
-                priority: this.priority.toUpperCase(),
-
+                priority: this.priority,
             };
             let attachmentIds = [];
             for(let i=0;i<this.attachments.length;i++)
@@ -141,7 +142,14 @@ export default {
             } else if (priority === 'Low') {
                 return 'grey';
             }
-        }
+        },
+        chopString(string, length){
+            if(string.length > length){
+                return `${string.slice(0, length)}...`;
+            }else{
+                return string;
+            }
+        },
     }
 }
 </script>
@@ -271,7 +279,7 @@ table {
 
 .send {
     position: relative;
-    left: 50vw;
+    left: 45vw;
     width: 6vw;
     height: 2.5vw;
     font-size: 2.7vh;
@@ -293,26 +301,33 @@ table {
     align-items: flex-start;
     margin-bottom: 1vh;
     margin-left: 1vw;
-    width: 10vw;
+    width: 15vw;
     height: 15vh;
     overflow-y: scroll;
     padding: 0.2vw;
 }
-
-.Attachment {
+.Attachment{
     width: 8vw;
     height: 3vh;
     margin-bottom: 0.5vh;
     border-radius: 4vh;
     background-color: #9d9d9d;
+}
+.Attachment:hover{
+    background-color: #5e5e5e;
+    color: white;
+}
+.attchName{
+    width: 10vw;
+    height: 2.2vh;
     padding-left: 0.5vw;
-    padding-right: 0.5vw;
     font-size: 2vh;
     font-weight: bold;
+    overflow: hidden;
+    cursor: pointer;
     color: black;
 }
-
-.downBar {
+.downBar{
     display: flex;
     flex-direction: row;
     align-items: center;
