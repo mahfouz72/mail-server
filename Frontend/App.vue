@@ -1,5 +1,5 @@
 <template>
-  <WelcomePage v-if="!userLoggedIn" @login="login" @signUp="signUp" :WelcomeMsg="WelcomeMsg"/>
+  <WelcomePage v-if="!userLoggedIn" @login="login" @signUp="signUp" :WelcomeMsg="WelcomeMsg" />
   <div v-else>
     <div class="Title">
       <span style="position: absolute; left: 0.1vw;margin-top: 0.2vh;">
@@ -21,9 +21,12 @@
       <SideBar :currentFolder="currentFolder" :useremail="useremail" @open="open" @openContacts="openContacts"
         @openDraft="openDraft" />
       <div>
-        <MainBoard v-if="!composing && windowState === 'viewFolders'" @openMail="openMail" :emails="emails" :Contacts="Contacts" :listing="listing"
-          @moveEmail="moveEmail" @deleteEmail="deleteEmail" :currentFolder="currentFolder" :multiselect="multiselect"
-          v-model:selectedEmails="selectedEmails"></MainBoard>
+        <MainBoard v-if="!composing && windowState === 'viewFolders'" 
+          :Contacts="Contacts" :listing="listing" :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect"
+          @openMail="openMail" @moveEmail="moveEmail" @deleteEmail="deleteEmail" @AddContact="AddContact" @AddEmail="AddEmail"
+          @DeleteContactEmail="DeleteContactEmail" @RenameContactEmail="RenameContactEmail"
+          @RenameContact="RenameContact" @DeleteContact="DeleteContact" v-model:selectedEmails="selectedEmails">
+        </MainBoard>
         <ViewMail v-else-if="!composing && windowState === 'viewMail'" @closeViewMail="windowState = 'viewFolders'"
           :email="email" />
         <ComposeWindow v-else @closeWindow="composing = false" :useremail="useremail" />
@@ -70,7 +73,7 @@ export default {
       composing: false,
       windowState: 'viewFolders',
       Contacts: [],
-      listing: 'emails'
+      listing: 'Emails'
     }
   },
   methods: {
@@ -111,7 +114,7 @@ export default {
         .then(res => res.json())
         .then(data => {
           if (data.errors) {
-            this.WelcomeMsg  = data.errors[0].defaultMessage;
+            this.WelcomeMsg = data.errors[0].defaultMessage;
           } else {
             this.WelcomeMsg = 'User created successfully!';
           }
@@ -127,7 +130,7 @@ export default {
       this.currentFolder = folder;
       this.emails = [];
       this.selectedEmails = [];
-      this.listing = 'emails';
+      this.listing = 'Emails';
       fetch('http://localhost:8080/' + this.useremail + '/' + folder.toLowerCase(), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -158,11 +161,12 @@ export default {
         });
       this.multiselect = false;
     },
-    openContacts(){
-      this.listing = 'contacts';
-      this.Contacts = [{name: 'user2',emails:['user21@cse.com','user22@cse.com']},{name: 'user3',emails:['user31@cse.com','user32@cse.com']},{name: 'user4',emails:['user41@cse.com','user42@cse.com']}];
+    openContacts() {
+      this.listing = 'Contacts';
+      this.currentFolder = 'Contacts';
+      this.Contacts = [{ name: 'userkjbakjdnkjdflbnweojldnfolwenofjewofjbewnklfjnewj2', emails: ['user21@cse.covddsdnkdsfjksdfbskjdhbfksdjbfkjdsbm', 'user22@cse.com', 'user21@cse.com', 'user22@cse.com', 'user21@cse.com', 'user22@cse.com', 'user21@cse.com', 'user22@cse.com', 'user21@cse.com', 'user22@cse.com'] }, { name: 'user3', emails: ['user31@cse.com', 'user32@cse.com'] }, { name: 'user4', emails: ['user41@cse.com', 'user42@cse.com'] }];
     },
-    openDraft(){
+    openDraft() {
       this.windowState = 'viewMail';
     },
     toggleMultiSelect() {
@@ -174,7 +178,7 @@ export default {
       this.windowState = 'viewMail';
       this.email = this.emails.find(email => email.id === id);
     },
-    sort(option,order) {
+    sort(option, order) {
       fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}?sortingCriteria=${option}&sortingOrder=${order}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -191,7 +195,7 @@ export default {
                 to: email.to,
                 subject: email.subject,
                 body: email.body,
-                date: email.date,
+                date: email.dateTime,
                 priority: email.priority,
                 attachments: email.attachments
               })
@@ -217,7 +221,40 @@ export default {
           })
       }
       this.selectedEmails = [];
-    }
+    },
+    AddContact() {
+      let contact = {
+        name: prompt("Please enter contact name", "New Contact"),
+        emailAddresses: [prompt("Please enter email","NewGuest@CSE.com")]
+      };
+      fetch('http://localhost:8080/contact/create/' + this.useremail,{
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contact),
+      }).then(
+        console.log("Contact created successfully")
+      )
+      this.openContacts();
+    },
+    RenameContact(contact) {
+      let newName = prompt("Please enter new contact name", contact.name);
+      contact.name = newName;
+    },
+    DeleteContact(contact){
+      this.Contacts = this.Contacts.filter(c => c.name !== contact.name);
+    },
+    AddEmail(contact) {
+      let email = prompt("Please enter email", "NewEmail@cse.com");
+      contact.emails.push(email);
+    },
+    RenameContactEmail(contact, email) {
+      let newName = prompt("Please enter new email", email);
+      contact.emails = contact.emails.filter(e => e !== email);
+      contact.emails.push(newName);
+    },
+    DeleteContactEmail(contact, email) {
+      contact.emails = contact.emails.filter(e => e !== email);
+    },
   },
 }
 </script>

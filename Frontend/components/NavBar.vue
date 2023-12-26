@@ -7,7 +7,7 @@
                 Compose
             </button>
         </span>
-        <span style="position: absolute;left: 20vw;margin-top: 0.2vh;">
+        <span v-if="currentFolder !== 'Contacts'" style="position: absolute;left: 20vw;margin-top: 0.2vh;">
             <button class="pi pi-check-square selecttoggle" @click="this.$emit('toggleMultiSelect')"></button>
             <span v-if="multiselect">
                 <button class="pi pi-trash selectoptnbtn" @click="this.$emit('deleteEmail')"></button>
@@ -19,8 +19,8 @@
             <button class="pi pi-search icon searchbtn"></button>
         </span>
         <span v-if="currentFolder !== 'Contacts'" class="sortOptns">
-            <button :class="{ selected: sortOption === 'default' }" class="sortOptn defaultbtn"
-                @click="sort('default')">Default</button>
+            <button :class="{ selected: sortOption === 'date' }" class="sortOptn defaultbtn"
+                @click="sort('date')">Default</button>
             <button :class="{ selected: sortOption === 'priority' }" class="sortOptn prioritybtn"
                 @click="sort('priority')">Priority</button>
         </span>
@@ -44,7 +44,7 @@ export default {
             value: '',
             items: ['Youssif', 'Ahmed', 'Mohamed'],
             searchResults: [],
-            sortOption: 'default',
+            sortOption: 'date',
             sortOrder: 'descending',
         };
     },
