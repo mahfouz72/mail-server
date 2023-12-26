@@ -75,7 +75,7 @@ export default {
             // Convert the list to a comma-separated string
             attachmentIds = attachmentIds.join(',');
             console.log("mail reuest: " + JSON.stringify(mailRequest))
-            fetch('http://localhost:8080/createDraft/'+ this.useremail+`?attachmentIds=${attachmentIds}`, {
+            fetch('http://localhost:8080/createDraft/' + this.useremail + `?attachmentIds=${attachmentIds}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(mailRequest),
@@ -89,7 +89,6 @@ export default {
                 });
         },
         async sendmail() {
-            this.$emit('closeWindow')
             const mailRequest = {
                 from: this.useremail,
                 to: [this.toField],

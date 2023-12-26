@@ -1,7 +1,7 @@
 <template>
     <div class="welcomepage">
         <div class="regBox">
-            <h1 style="color: black;cursor:default;">Welcome</h1>
+            <i class="Welcome">Welcome</i>
             <form @submit.prevent>
                 <div class="form-group">
                     <input type="text" id="username" v-model="username" placeholder="Username" />
@@ -10,11 +10,13 @@
                 <div class="form-group">
                     <input type="email" id="email" v-model="email" placeholder="Email" />
                 </div>
-                <div>
-                    {{ Message }}
+                <div class="welmsg" :class="msgColor()">
+                    {{ WelcomeMsg }}
                 </div>
-                <button class="Btn" @click="this.$emit('login', this.username, this.email)">Login</button>
-                <button class="Btn" @click="this.$emit('signUp', this.username, this.email)">SignUp</button>
+                <div class="Buttons">
+                    <button class="Btn" @click="this.$emit('login', this.username, this.email)">Login</button>
+                    <button class="Btn" @click="this.$emit('signUp', this.username, this.email)">SignUp</button>
+                </div>
             </form>
         </div>
     </div>
@@ -23,51 +25,98 @@
 <script>
 export default {
     name: 'WelcomePage',
+    props: ['WelcomeMsg'],
     data() {
         return {
             username: '',
             email: '',
-            Message: ''
         };
-    }
+    },
+    methods: {
+        msgColor() {
+            if (this.WelcomeMsg === 'Invalid username or email!') {
+                return 'red';
+            } else if (this.WelcomeMsg === 'User already exists!') {
+                return 'red';
+            } else if (this.WelcomeMsg === 'User created successfully!') {
+                return 'green';
+            }
+        },
+    },
 };
 </script>
 
 <style scoped>
 .welcomepage {
-    background-color: gainsboro;
+    background-color: rgb(164, 211, 222);
     height: 100vh;
     width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.Welcome{
+    position: relative;
+    top: -5%;
+    font-size: 4vh;
+    font-weight: bold;
 }
 .regBox {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: auto;
-    border: 2px solid black;
-    border-radius: 10px; 
+    border: 1px solid black;
     padding: 5vh;
     width: 30vw;
-    background-color: rgba(5, 5, 5, 0.104);
+    height: 40vh;
+    background-color: white;
 }
 .form-group {
-    margin-bottom: 3vh;
+    height: 7vh;
+}
+#username, #email{
+    position: relative;
+    left: -1%;
+    width: 25vw;
+    height: 4vh;
+    border: none;
+    background-color: transparent;
+    border-bottom: 1px solid black;
+    padding: 1vh;
+    margin: 1vh;
+}
+#username:focus, #email:focus{
+    outline: none;
+}
+.welmsg{
+    padding: 1vh;
+    width: 100%;
+    height: 4vh;
+    font-size: 1.7vh;
+    font-weight: bold;
+    text-align: center;
+}
+.red{
+    color: red;
+}
+.green{
+    color: green;
+}
+.Buttons{
+    margin-top: 1vh;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 7vh;
 }
 .Btn{
     width: 8vw;
     height: 5vh;
-    margin: 1vw;
     padding: 1vh;
     border-radius: 20px;
-    border: 1px solid black;
     cursor: pointer;
+    font-weight: bold;
+    background-color: azure;
 }
-#username, #email{
-    width: 50%;
-    height: 4vh;
-    border-radius: 5px;
-    border: 1px solid black;
-    cursor:text;
+.Btn:hover{
+    background-color: rgb(205, 246, 255);
 }
 </style>

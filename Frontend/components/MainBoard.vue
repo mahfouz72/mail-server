@@ -1,9 +1,10 @@
 <template>
     <div class="mainboard">
-        <div class="email-list">
-            <div class="email" v-for="(email, index) in paginatedEmails" :key="index" @click="this.$emit('openMail',email.id)">
+        <div v-if="listing==='emails'" class="email-list">
+            <div class="email" v-for="(email, index) in paginatedElements" :key="index"
+                @click="this.$emit('openMail', email.id)">
                 <div v-if="multiselect" class="checkbox">
-                    <input type="checkbox" :checked="selectedEmails[email.id]" @click.stop="selectEmail(email)">
+                    <input type="checkbox" :value="email.id" @click.stop="selectEmail(email)" v-model="checkedEmails">
                 </div>
                 <div class="user">
                     <div v-for="line in getEmailUser(email)" :key="line.value">
@@ -12,22 +13,48 @@
                     </div>
                 </div>
                 <div class="content">
-                    <i><label style="font-weight: bold;cursor: pointer;">Subject: </label>{{ chopString(email.subject,25) }}</i>
-                    <i><label style="font-weight: bold;cursor: pointer;">Body: </label>{{ chopString(email.body,85) }}</i>
+                    <i><label style="font-weight: bold;cursor: pointer;">Subject: </label>{{ chopString(email.subject, 25)
+                    }}</i>
+                    <i><label style="font-weight: bold;cursor: pointer;">Body: </label>{{ chopString(email.body, 85) }}</i>
                 </div>
                 <div class="date">{{ email.date }}</div>
                 <div v-if="!multiselect" class="emailOptions">
-                    <i class="pi pi-folder-open moveEmail icon"></i>
-                    <i class="pi pi-trash deleteEmail icon"></i>
-                </div>    
+                    <i class="pi pi-folder-open moveEmail icon" @click.stop="moveEmail(email)"></i>
+                    <i class="pi pi-trash deleteEmail icon" @click.stop="deleteEmail(email)"></i>
+                </div>
+            </div>
+        </div>
+        <div v-else-if="listing==='Contacts'" class="contacts-list">
+            <div class="contact" v-for="(contact, index) in paginatedElements" :key="index">
+                <div v-if="multiselect" class="checkbox">
+                    <input type="checkbox" :value="contact.id" @click.stop="selectcontact(contact)" v-model="checkedcontacts">
+                </div>
+                <div class="user">
+                    <div v-for="line in getcontactUser(contact)" :key="line.value">
+                        <label style="font-weight: bold;cursor: pointer;">{{ line.label }}</label>
+                        <i>{{ line.value }}</i>
+                    </div>
+                </div>
+                <div class="content">
+                    <i><label style="font-weight: bold;cursor: pointer;">Subject: </label>{{ chopString(contact.subject, 25)
+                    }}</i>
+                    <i><label style="font-weight: bold;cursor: pointer;">Body: </label>{{ chopString(contact.body, 85) }}</i>
+                </div>
+                <div class="date">{{ contact.date }}</div>
+                <div v-if="!multiselect" class="contactOptions">
+                    <i class="pi pi-folder-open movecontact icon" @click.stop="movecontact(contact)"></i>
+                    <i class="pi pi-trash deletecontact icon" @click.stop="deletecontact(contact)"></i>
+                </div>
             </div>
         </div>
         <div class="pagination">
             <button class="pi pi-angle-left paginationBtn" @click="previousPage" :disabled="currentPage === 1"></button>
             <div class="page-numbers">
-                <button v-for="pageNumber in displayedPageNumbers" :key="pageNumber" class="nmbrBtn" :class="{ active: pageNumber === currentPage }" @click="goToPage(pageNumber)">{{ pageNumber }}</button>
+                <button v-for="pageNumber in displayedPageNumbers" :key="pageNumber" class="nmbrBtn"
+                    :class="{ active: pageNumber === currentPage }" @click="goToPage(pageNumber)">{{ pageNumber }}</button>
             </div>
-            <button class="pi pi-angle-right paginationBtn" @click="nextPage" :disabled="currentPage === totalPages"></button>
+            <button class="pi pi-angle-right paginationBtn" @click="nextPage"
+                :disabled="currentPage === totalPages"></button>
         </div>
     </div>
 </template>
@@ -35,37 +62,44 @@
 <script>
 export default {
     name: 'MainBoard',
-    props: ['emails', 'currentFolder', 'selectedEmails', 'multiselect'],
+    props: ['emails', 'currentFolder', 'selectedEmails', 'multiselect', 'listing', 'Contacts'],
     data() {
         return {
+            checkedEmails: [],
+            selEmails: [],
             currentPage: 1,
-            emailsPerPage: 10,
-            compselectedEmails: {},
+            elementsPerPage: 10,
         };
     },
     watch: {
-        multiselect(newVal) {
-            if(!newVal){
-                this.compselectedEmails = {};
-                this.$emit('update:selectedEmails', this.compselectedEmails);
-            }
+        multiselect() {
+            this.checkedEmails = [];
+            this.selEmails = [];
         }
     },
     computed: {
-        paginatedEmails() {
-            const startIndex = (this.currentPage - 1) * this.emailsPerPage;
-            const endIndex = startIndex + this.emailsPerPage;
-            return this.emails.slice(startIndex, endIndex);
+        paginatedElements() {
+            const startIndex = (this.currentPage - 1) * this.elementsPerPage;
+            const endIndex = startIndex + this.elementsPerPage;
+            if(this.listing==='emails')
+                return this.emails.slice(startIndex, endIndex);
+            else if(this.listing==='Contacts')
+                return this.Contacts.slice(startIndex, endIndex);
+            else return [];
         },
         totalPages() {
-            return Math.ceil(this.emails.length / this.emailsPerPage);
+            if(this.listing==='emails')
+                return Math.ceil(this.emails.length / this.elementsPerPage);
+            else if(this.listing==='Contacts')
+                return Math.ceil(this.Contacts.length / this.elementsPerPage);
+            else return [];
         },
         displayedPageNumbers() {
             const range = 10;
             const startPage = Math.max(1, this.currentPage - Math.floor(range / 2));
             const endPage = Math.min(this.totalPages, startPage + range - 1);
             return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
-        },
+        }
     },
     methods: {
         previousPage() {
@@ -82,25 +116,47 @@ export default {
             this.currentPage = pageNumber;
         },
         getEmailUser(email) {
-            if(this.currentFolder === 'Inbox') {
+            if (this.currentFolder === 'Inbox') {
                 return [{ label: 'From: ', value: email.from }];
-            }else if(this.currentFolder === 'Sent' || this.currentFolder === 'Draft') {
+            } else if (this.currentFolder === 'Sent' || this.currentFolder === 'Draft') {
                 return [{ label: 'To: ', value: email.to }];
-            }else if(this.currentFolder === 'Trash'){
+            } else if (this.currentFolder === 'Trash') {
                 return [{ label: 'From: ', value: email.from }, { label: 'To:', value: email.to }];
             }
         },
-        chopString(string, length){
-            if(string.length > length){
+        chopString(string, length) {
+            if (string.length > length) {
                 return `${string.slice(0, length)}...`;
-            }else{
+            } else {
                 return string;
             }
         },
         selectEmail(email){
-            this.compselectedEmails[email.id] = !this.compselectedEmails[email.id];
-            this.$emit('update:selectedEmails', this.compselectedEmails);
+            const index = this.checkedEmails.indexOf(email.id);
+            if (index === -1) {
+                this.checkedEmails.push(email.id);
+            } else {
+                this.checkedEmails.splice(index, 1);
+            }
+            this.checkedEmails = this.checkedEmails.filter(id => {
+                return this.emails.find(email => email.id === id);
+            });
+            this.selEmails = this.checkedEmails.map(id => {
+                return this.emails.find(email => email.id === id);
+            });
+            console.log('selected emails in mainboard');
+            console.log(this.selEmails);
+            this.$emit('update:selectedEmails', this.selEmails);
         },
+        // moveEmail(email) {
+        //     this.compselectedEmails[email.id] = !this.compselectedEmails[email.id];
+        //     this.$emit('update:selectedEmails', this.compselectedEmails);
+        //     this.$emit('moveEmail');
+        // },
+        deleteEmail(email) {
+            this.selEmails.push(email);
+            this.$emit('deleteEmail', this.selEmails);
+        }
     }
 }
 </script>
@@ -113,6 +169,7 @@ export default {
     margin: 0;
     border-bottom: 0.1vw solid black;
 }
+
 .email-list {
     height: 90%;
     width: 100%;
@@ -121,6 +178,7 @@ export default {
     padding-left: 1vw;
     padding-top: 1.5vh;
 }
+
 .email {
     background-color: rgba(127, 129, 132, 0.821);
     height: 6.5vh;
@@ -134,12 +192,14 @@ export default {
     font-size: 2vh;
     color: black;
 }
+
 .email:hover {
     background-color: rgba(127, 129, 132, 0.5);
     color: white;
     cursor: pointer;
 }
-.user{
+
+.user {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -151,6 +211,7 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .content {
     display: flex;
     flex-direction: column;
@@ -163,6 +224,7 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .date {
     display: flex;
     flex-direction: column;
@@ -170,6 +232,7 @@ export default {
     width: 8%;
     height: 40%;
 }
+
 .emailOptions {
     position: relative;
     left: 5.5vw;
@@ -181,26 +244,33 @@ export default {
     height: 100%;
     color: black;
 }
+
 .moveEmail {
     font-size: 3.1vh;
     padding: 1vh;
 }
+
 .deleteEmail {
     font-size: 3vh;
     padding: 1vh;
 }
+
 .moveEmail:hover {
     color: teal;
 }
+
 .deleteEmail:hover {
     color: red;
 }
+
 .email .emailOptions {
     display: none;
 }
-.email:hover .emailOptions{
+
+.email:hover .emailOptions {
     display: flex;
 }
+
 .checkbox {
     display: flex;
     flex-direction: column;
@@ -208,24 +278,30 @@ export default {
     width: 5%;
     height: 40%;
 }
+
 .pagination {
     margin-top: 2vh;
 }
+
 .paginationBtn {
     background-color: transparent;
     border: none;
     color: white;
-    font-size: 3vh;;
+    font-size: 3vh;
+    ;
     cursor: pointer;
 }
-.paginationBtn:disabled{
+
+.paginationBtn:disabled {
     color: grey;
 }
+
 .page-numbers {
     display: inline-flex;
     font-size: 1vh;
     transform: translate(0, -0.5vh);
 }
+
 .nmbrBtn {
     background-color: transparent;
     border: none;
@@ -233,7 +309,7 @@ export default {
     font-size: 2vh;
     cursor: pointer;
 }
+
 .nmbrBtn.active {
     color: grey;
-}
-</style>
+}</style>
