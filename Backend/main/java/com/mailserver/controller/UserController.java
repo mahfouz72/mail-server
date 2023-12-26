@@ -18,7 +18,7 @@ public class UserController {
         return userService.addUser(user);
     }
 
-    @GetMapping("/user/login")
+    @PostMapping("/user/login")
     public boolean logIn(@RequestBody User user){
           return userService.logIn(user.getEmail(),user.getUserName());
     }

@@ -2,7 +2,6 @@ package com.mailserver.controller;
 
 import com.mailserver.service.AttachmentService;
 import com.mailserver.model.Attachment;
-import com.mailserver.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +44,8 @@ public class AttachmentController {
 
     @GetMapping("/view/{email}/{mailId}/{folderName}/{attachmentId}")
     public ResponseEntity<byte[]> downloadFromMail(@PathVariable String email, @PathVariable String mailId,
-                                           @PathVariable String folderName,@PathVariable String attachmentId){
+                                                   @PathVariable String folderName,@PathVariable String attachmentId){
         return attachmentService.downloadFromMail(email,folderName,mailId,attachmentId);
     }
+
 }

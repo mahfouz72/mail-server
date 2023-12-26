@@ -24,14 +24,15 @@ public class MailController {
 
     @GetMapping("{email}/{folderName}")
     public List<Mail> getMails(@PathVariable String email,@PathVariable String folderName,
-                               @RequestParam(required = false,defaultValue = "date") String sortingCriteria){
+                               @RequestParam(required = false,defaultValue = "date") String sortingCriteria,
+                               @RequestParam(required = false,defaultValue = "descending") String sortingOrder){
 
-            return mailService.getMails(email,folderName,sortingCriteria);
+            return mailService.getMails(email,folderName,sortingCriteria,sortingOrder);
     }
 
     @GetMapping("{email}/{folderName}/filter")
     public List<Mail> filterMails(@PathVariable String email,@PathVariable String folderName,
-                                  @RequestParam String filterCriteria,@RequestParam String filterValue){
+                                  @RequestParam List<String> filterCriteria,@RequestParam String filterValue){
 
         return mailService.filterMails(email,folderName,filterCriteria,filterValue);
     }
@@ -55,9 +56,8 @@ public class MailController {
     }
 
     @PostMapping("/createDraft/{email}")
-    public Mail createDraft(@PathVariable String email,@RequestBody Mail mail,
-                            @RequestParam ArrayList<String> attachmentIds){
-        return draftService.addDraft(email,mail,attachmentIds);
+    public Mail createDraft(@PathVariable String email,@RequestBody Mail mail){
+        return draftService.addDraft(email,mail);
     }
     @PostMapping("/updateDraft/{email}/{id}")
     public List<Mail> updateDraft(@PathVariable String email,@PathVariable String id,@RequestBody Mail newDraft){

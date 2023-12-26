@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class Mail {
@@ -103,5 +104,20 @@ public class Mail {
 
     public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Mail mail = (Mail) o;
+        return Objects.equals(id, mail.id) && Objects.equals(from, mail.from)
+                && Objects.equals(to, mail.to) && Objects.equals(subject, mail.subject)
+                && Objects.equals(body, mail.body) && Objects.equals(dateTime, mail.dateTime)
+                && priority == mail.priority && Objects.equals(attachments, mail.attachments);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, from, to, subject, body, dateTime, priority, attachments);
     }
 }
