@@ -34,11 +34,18 @@
 <script>
 export default {
     name: 'ViewMail',
-    props: ['email'],
+    props: ['email','useremail','currentFolder'],
     methods: {
         download(id) {
             console.log(id);
-            // Implement Download attachment fetch here
+            //let folderName= 'sent' // probs current folder must come here 
+            console.log(this.currentFolder.toLowerCase())
+            fetch('http://localhost:8080/view/' + this.useremail+'/'+this.email.id+'/'+this.currentFolder.toLowerCase()+'/'+id,{
+                method: "GET"
+            }).then(res => {
+                console.log("downloaded successfully") //testing
+                window.open(res.url)
+            })
         },
         fixBody(body) {
             let x = [];
