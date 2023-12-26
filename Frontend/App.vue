@@ -174,8 +174,8 @@ export default {
       this.windowState = 'viewMail';
       this.email = this.emails.find(email => email.id === id);
     },
-    sort(option) {
-      fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}?sortingCriteria=${option}`, {
+    sort(option,order) {
+      fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}?sortingCriteria=${option}&sortingOrder=${order}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })
