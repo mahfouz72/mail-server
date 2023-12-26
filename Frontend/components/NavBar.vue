@@ -16,8 +16,17 @@
         </span>
         <span class="search-container">
             <input class="search-field" type="text" v-model="value" @input="search" placeholder="Search" />
-            <button class="pi pi-search icon searchbtn"></button>
+            <!--<button class="pi pi-search icon searchbtn"></button>-->
         </span>
+         <!--filterCriteria-->
+         <div class="multiselect" >
+            <MultiSelect
+              v-model="selectedFilters"
+              :options="filterOptions"
+              placeholder="Select Filters"
+              :maxSelectedLabels="3"
+              @change="search"></MultiSelect>
+         </div>
         <span v-if="currentFolder !== 'Contacts'" class="sortOptns">
             <button :class="{ selected: sortOption === 'date' }" class="sortOptn defaultbtn"
                 @click="sort('date')">Default</button>
@@ -44,8 +53,10 @@ export default {
             value: '',
             items: ['Youssif', 'Ahmed', 'Mohamed'],
             searchResults: [],
-            sortOption: 'date',
+            sortOption: 'default',
             sortOrder: 'descending',
+            selectedFilters: [],
+            filterOptions: ['Sender', 'Receiver', 'Subject', 'Body'],
         };
     },
     props: ['currentFolder', 'multiselect', 'composing'],
@@ -63,10 +74,8 @@ export default {
             this.$emit('sort', this.sortOption, this.sortOrder);
         },
         search() {
-            this.searchResults = this.items.filter((item) => {
-                return item.toLowerCase().startsWith(this.value.toLowerCase());
-            });
-            console.log(this.items);
+            console.log(this.value,this.selectedFilters)
+            this.$emit('search', this.value,this.selectedFilters);
         },
     },
 };
