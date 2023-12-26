@@ -77,6 +77,11 @@ export default {
                 newName = `${baseName}(${i})`;
                 i++;
             }
+            fetch('http://localhost:8080/folder/' +this.useremail+'/'+name+'/'+newName, {
+                method: "POST",
+            }).then(
+                console.log("Folder renamed successfully")
+            )
             folder.name = newName;
         }
     },
