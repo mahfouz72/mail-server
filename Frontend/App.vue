@@ -16,7 +16,7 @@
     </div>
     <NavBar :currentFolder="currentFolder" :multiselect="multiselect" :composing="composing"
       @toggleMultiSelect="toggleMultiSelect" @compose="composing = !composing" @sort="sort"
-      @deleteEmail="deleteEmail(this.selectedEmails)" @open="open(this.currentFolder)"/>
+      @deleteEmail="deleteEmail(this.selectedEmails)" @open="open(this.currentFolder)" @search="search"/>
     <div style="display: flex;">
       <SideBar :currentFolder="currentFolder" :useremail="useremail" @open="open" @openContacts="openContacts"
         @openDraft="openDraft" />
@@ -254,6 +254,34 @@ export default {
     },
     DeleteContactEmail(contact, email) {
       contact.emails = contact.emails.filter(e => e !== email);
+    },
+    search(filterValue,filterCriteria){
+      filterCriteria = filterCriteria.join(',')
+      console.log(filterValue,filterCriteria);
+      fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}/filter?filterCriteria=${filterCriteria}&filterValue=${filterValue}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then(res => res.json())
+        .then(data => {
+            this.emails = [];
+            data.forEach(email => {
+              this.emails.push({
+                id: email.id,
+                from: email.from,
+                to: email.to,
+                subject: email.subject,
+                body: email.body,
+                date: email.dateTime,
+                priority: email.priority,
+                attachments: email.attachments
+              })
+            });
+          console.log(this.emails)
+        })
+        .catch(error => {
+          console.error('Error:', error)
+        });
     },
   },
 }
