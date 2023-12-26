@@ -50,7 +50,7 @@ export default {
     methods: {
         sort(option) {
             this.sortOption = option;
-            this.$emit('sort', this.sortOption);
+            this.$emit('sort', this.sortOption, this.sortOrder);
         },
         sortOrdr() {
             if (this.sortOrder === 'descending') {
@@ -58,7 +58,7 @@ export default {
             } else {
                 this.sortOrder = 'descending';
             }
-            this.$emit('sortOrder', this.sortOrder);
+          this.$emit('sort', this.sortOption, this.sortOrder);
         },
         search() {
             this.searchResults = this.items.filter((item) => {
