@@ -82,7 +82,7 @@ export default {
 </script>
 
 <style scoped>
-.navbar {
+    .navbar {
     position: relative;
     background-color: rgba(7, 10, 10, 0.821);
     height: 5.7vh;
@@ -160,7 +160,7 @@ export default {
 }
 
 .search-field {
-    width: 100%;
+    width: 60%;
     padding: 0.5vh 0.5vw;
     border-radius: 10px;
     border: 0.1vw solid black;
@@ -234,4 +234,10 @@ export default {
     margin: 1vh;
     position: absolute;
     right: 0.5vw;
-}</style>
+}
+.multiselect{
+  display:inline-block;
+  height: 25px;
+  width: 100px;
+}
+</style>
