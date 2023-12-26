@@ -71,9 +71,27 @@ export default {
   },
   methods: {
     login(username, useremail) {
-      this.username = username;
-      this.useremail = useremail;
-      this.userLoggedIn = true;
+      const userRequest = {
+        userName: username,
+        email: useremail,
+      };
+      fetch('http://localhost:8080/user/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userRequest),
+      })
+        .then(res => res.text())
+        .then(data => {
+          if (data === "false" ) {
+            console.log("username or email is incorrect") // this message should appear in welcome page
+          } else {
+            console.log("email is log in sucessfully")
+            this.username = username;
+            this.useremail = useremail;
+            this.userLoggedIn = true;
+          }
+        })
+        .catch(error => console.error('Error:', error));
     },
     signUp(username, useremail) {
       const userRequest = {
@@ -88,11 +106,10 @@ export default {
         .then(res => res.json())
         .then(data => {
           if (data.errors) {
-            console.log(data.errors[0].defaultMessage);
+            console.log(data.errors[0].defaultMessage);  // ERROR Message should appear
           } else {
-            this.username = username;
-            this.useremail = useremail;
-            this.userLoggedIn = true;
+            console.log("email is sign up sucessfully")
+            // clear username and email in the form
           }
         })
         .catch(error => console.error('Error:', error));
