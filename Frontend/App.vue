@@ -28,7 +28,7 @@
           @RenameContact="RenameContact" @DeleteContact="DeleteContact" v-model:selectedEmails="selectedEmails">
         </MainBoard>
         <ViewMail v-else-if="!composing && windowState === 'viewMail'" @closeViewMail="windowState = 'viewFolders'"
-          :email="email" />
+          :email="email" :useremail="useremail" :currentFolder="currentFolder" />
         <ComposeWindow v-else @closeWindow="composing = false" :useremail="useremail" />
       </div>
     </div>
