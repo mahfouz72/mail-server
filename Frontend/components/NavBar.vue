@@ -45,9 +45,12 @@
 <script>
 import 'primeicons/primeicons.css';
 import 'primevue/resources/themes/mira/theme.css';
+import 'primevue/resources/themes/mira/theme.css';
+import MultiSelect from 'primevue/multiselect';
 
 export default {
     name: 'NavBar',
+    components: {MultiSelect},
     data() {
         return {
             value: '',
