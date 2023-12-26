@@ -1,18 +1,20 @@
 package com.mailserver.service;
 
 import com.mailserver.model.Attachment;
+import com.mailserver.model.mail.Mail;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AttachmentService {
     private final Map<String, Attachment> db = new HashMap<>();
+    @Autowired
+    private MailService mailService;
 
     public Collection<Attachment> get() {
         return db.values();
@@ -32,9 +34,7 @@ public class AttachmentService {
         db.put(attachment.getId(), attachment);
         return attachment;
     }
-
-    public ResponseEntity<byte[]> download(String id) {
-        Attachment attachment = db.get(id);
+    private ResponseEntity<byte[]> downloadFile(Attachment attachment) {
         if (attachment == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         byte[] data = attachment.getData();
         HttpHeaders headers = new HttpHeaders();
@@ -45,5 +45,24 @@ public class AttachmentService {
                 .build();
         headers.setContentDisposition(build);
         return new ResponseEntity<>(data, headers, HttpStatus.OK);
+    }
+    public ResponseEntity<byte[]> download(String id) {
+        Attachment attachment = db.get(id);
+        return downloadFile(attachment);
+    }
+    public ResponseEntity<byte[]> downloadFromMail(String email,String folderName ,String mailId,String attachmentId) {
+        List<Mail> mails = mailService.getMailsByFolderName(email, folderName);
+        Attachment attachment = null;
+        for (Mail mail : mails) {
+            if (Objects.equals(mail.getId(), mailId)) {
+                List<Attachment> attachments = mail.getAttachments();
+                for (Attachment value : attachments) {
+                    if (Objects.equals(value.getId(), attachmentId)) {
+                        attachment = value;
+                    }
+                }
+            }
+        }
+        return downloadFile(attachment);
     }
 }
