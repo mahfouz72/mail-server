@@ -22,7 +22,7 @@ public class MailService {
         List<Mail> mails = getMailsByFolderName(email,folderName);
         return sort(mails,sortingCriteria);
     }
-    private List<Mail> getMailsByFolderName(String email,String folderName){
+    public List<Mail> getMailsByFolderName(String email,String folderName){
         User currentUser = userService.getUserByEmail(email);
         return switch (folderName.toLowerCase()){
             case "inbox" -> currentUser.getInbox();
