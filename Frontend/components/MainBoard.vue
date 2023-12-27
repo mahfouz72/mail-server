@@ -156,11 +156,12 @@ export default {
             console.log(this.selEmails);
             this.$emit('update:selectedEmails', this.selEmails);
         },
-        // moveEmail(email) {
-        //     this.compselectedEmails[email.id] = !this.compselectedEmails[email.id];
-        //     this.$emit('update:selectedEmails', this.compselectedEmails);
-        //     this.$emit('moveEmail');
-        // },
+        moveEmail(email) {
+            this.selEmails.push(email)
+            console.log(this.selEmails)
+            this.$emit('moveEmail', this.selEmails)
+            this.selEmails = []
+        },
         deleteEmail(email) {
             this.selEmails.push(email);
             this.$emit('deleteEmail', this.selEmails);

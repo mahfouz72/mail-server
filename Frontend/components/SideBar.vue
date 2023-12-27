@@ -32,11 +32,18 @@
 <script>
 export default {
     name: 'SideBar',
-    props: ['currentFolder', 'useremail'],
+    props: ['currentFolder', 'useremail','addedFolder'],
     data() {
         return {
             Addedfolders: [],
         };
+    },
+    watch: {
+        addedFolder: function (val) {
+            if (!this.Addedfolders.find(folder => folder.name === val)) {
+                this.Addedfolders.push({ name: val });
+            }
+        }
     },
     methods: {
         addFolder() {

@@ -11,7 +11,7 @@
             <button class="pi pi-check-square selecttoggle" @click="this.$emit('toggleMultiSelect')"></button>
             <span v-if="multiselect">
                 <button class="pi pi-trash selectoptnbtn" @click="this.$emit('deleteEmail')"></button>
-                <button class="pi pi-folder-open selectoptnbtn"></button>
+                <button class="pi pi-folder-open selectoptnbtn" @click="this.$emit('moveEmail')"></button>
             </span>
         </span>
         <span class="search-container">

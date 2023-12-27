@@ -89,6 +89,7 @@ export default {
                 });
         },
         async sendmail() {
+            this.$emit('closeWindow')
             const mailRequest = {
                 from: this.useremail,
                 to: [this.toField],
