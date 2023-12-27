@@ -50,17 +50,23 @@ public class MailService {
     }
     public List<Mail> deleteMail(String email, String folderName, String id) {
 
-        User currentUser = userService.getUserByEmail(email);
+        List<Mail> mails = getMailsByFolderName(email,folderName);
 
-        if(folderName.equals("trash")){
-            currentUser.getTrash().removeIf(mail -> mail.getId().equals(id));
-            userService.saveUsers(email);
-            return currentUser.getTrash();
+        Mail mailToBeDeleted = mails.stream()
+                .filter(mail -> mail.getId().equals(id))
+                .findFirst().orElse(null);
+
+        mails.remove(mailToBeDeleted);
+
+        if(!folderName.equals("trash")){
+            userService.getUserByEmail(email).getTrash().add(mailToBeDeleted);
         }
-        return moveMail(email,folderName,"trash",id);
+
+        userService.saveUsers(email);
+        return mails;
     }
     public List<Mail> moveMail(String email, String fromFolder, String toFolder, String id) {
-
+        
         //it to folder doesn't exist, create it
         if(!folderService.folderExists(email,toFolder)){
             folderService.createFolder(email,toFolder);
@@ -71,21 +77,13 @@ public class MailService {
         Mail mailToBeMoved = mails.stream()
                 .filter(mail -> mail.getId().equals(id))
                 .findFirst().orElse(null);
-
-        mails.remove(mailToBeMoved);
-
-        if(toFolder.equals("trash")){
-            userService.getUserByEmail(email).getTrash().add(mailToBeMoved);
-        }
-        else{
-            Folder to = folderService.getFolder(email,toFolder);
-            to.getMails().add(mailToBeMoved);
-        }
+        
+        Folder to = folderService.getFolder(email,toFolder);
+        to.getMails().add(mailToBeMoved);
 
         userService.saveUsers(email);
         return mails;
     }
-
     public List<Mail> filterMails(String email, String folderName, List<String> filterCriteria, String filterValue) {
 
         List<Mail> mails = getMailsByFolderName(email,folderName);
