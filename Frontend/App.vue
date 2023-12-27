@@ -464,7 +464,7 @@ export default {
         }).then(res => res.json())
           .then(data => {
             console.log(data)
-            this.emails = this.emails.filter(e => e.id !== mail.id);
+            
           })
       }
       this.selectedEmails = [];
