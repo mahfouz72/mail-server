@@ -60,7 +60,11 @@ public class MailService {
         return moveMail(email,folderName,"trash",id);
     }
     public List<Mail> moveMail(String email, String fromFolder, String toFolder, String id) {
-
+        
+         //if to folder doesn't exist, create it
+        if(folderService.getFolder(email,toFolder) == null){
+            folderService.createFolder(email,toFolder);
+        }
 
         List<Mail> mails = getMailsByFolderName(email,fromFolder);
 
@@ -68,7 +72,7 @@ public class MailService {
                 .filter(mail -> mail.getId().equals(id))
                 .findFirst().orElse(null);
 
-        mails.removeIf(mail -> mail.getId().equals(id));
+        mails.remove(mailToBeMoved);
 
         if(toFolder.equals("trash")){
             userService.getUserByEmail(email).getTrash().add(mailToBeMoved);
