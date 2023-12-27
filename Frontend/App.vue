@@ -119,9 +119,14 @@ export default {
       })
         .then(res => res.json())
         .then(data => {
+          // 400 bad request for validation
           if (data.errors) {
             this.WelcomeMsg = data.errors[0].defaultMessage;
-          } else {
+          } else if(data.message){
+            // run time exception error 500 when user already exist
+            this.WelcomeMsg = data.message;
+          }
+          else{
             this.WelcomeMsg = 'User created successfully!';
           }
         })
