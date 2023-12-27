@@ -1,6 +1,6 @@
 <template>
     <div class="navbar">
-        <span class="pi pi-refresh refresh" @click.stop="this.$emit('open')"></span>
+        <span v-if="currentFolder !== 'Contacts'" class="pi pi-refresh refresh" @click.stop="this.$emit('open')"></span>
         <span style="position: absolute; left: 3vw;">
             <button class="compose" :class="{ selected: composing }" @click="this.$emit('compose')">
                 <i class="pi pi-pencil icon" style="position: absolute;left: 0.7vw;font-size: 2.5vh;margin-top: 0.2vh;"></i>
@@ -40,6 +40,7 @@
 import 'primeicons/primeicons.css';
 import 'primevue/resources/themes/mira/theme.css';
 import 'primevue/resources/themes/mira/theme.css';
+// import 'primevue/resources/themes/md-dark-indigo/theme.css';
 import MultiSelect from 'primevue/multiselect';
 
 export default {
@@ -221,6 +222,7 @@ export default {
 .multiselect {
     display: inline-block;
     height: 25px;
-    width: 100px;
+    width: 10px;
+    
 }
 </style>

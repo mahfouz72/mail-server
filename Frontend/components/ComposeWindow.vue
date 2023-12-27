@@ -27,7 +27,7 @@
                 <div class="attchList">
                     <div v-for="attchmnt in attachments" :key="attchmnt" class="Attachment">
                         <span class="attchName" @click="download(attchmnt)">{{ chopString(attchmnt.fileName, 11) }}</span>
-                        <button class="pi pi-times attchRemove" @click="detach(attchmnt.id)"></button>
+                        <button class="pi pi-times attchRemove" @click="detach(attchmnt)"></button>
                     </div>
                 </div>
                 <button class="pi pi-send send" @click="sendmail()"></button>
@@ -93,7 +93,6 @@ export default {
                 });
         },
         editDraft() {
-            this.$emit('closeWindow')
             const mailRequest = {
                 from: this.useremail,
                 to: [this.toField],
@@ -122,13 +121,15 @@ export default {
                 .catch(error => {
                     console.error('Error:', error)
                 });
+            
+            this.$emit('closeWindow')
         },
-        async sendmail() {
+         sendmail() {
             this.$emit('closeWindow')
             const mailRequest = {
                 id: this.windowState === 'viewDraft' ? this.email.id : '',
                 from: this.useremail,
-                to: [this.toField],
+                to: this.toField.split(','),
                 subject: this.subjectField,
                 body: this.bodyField,
                 priority: this.priority.toUpperCase(),
@@ -143,7 +144,6 @@ export default {
             attachmentIds = attachmentIds.join(',');
             console.log("mail reuest: " + JSON.stringify(mailRequest))
             console.log("wasDraft: " + this.wasDraft)
-
             fetch(`http://localhost:8080/compose?wasDraft=${this.wasDraft}&attachmentIds=${attachmentIds}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -172,6 +172,7 @@ export default {
         },
         download(attachment) {
             const id = attachment.id;
+            console.log(attachment)
             if (attachment.contentType == null) {
                 fetch('http://localhost:8080/download/' + id, {
                     method: "GET"
@@ -189,17 +190,31 @@ export default {
                 })
             }
         },
-        detach(id) {
-            fetch('http://localhost:8080/detach/' + id, {
-                method: "DELETE",
-            }).then(res => {
-                for (let i = 0; i < this.attachments.length; i++) {
-                    if(this.attachments[i].id === id) {
-                        this.attachments.splice(i, 1);
+        detach(attachment) {
+            const id = attachment.id;
+            if (attachment.contentType == null) {
+                fetch('http://localhost:8080/detach/' + id, {
+                    method: "DELETE",
+                }).then(res => {
+                    for (let i = 0; i < this.attachments.length; i++) {
+                        if(this.attachments[i].id === id) {
+                            this.attachments.splice(i, 1);
+                        }
                     }
-                }
-                console.log(res.url) //testing
-            })
+                    console.log(res.url) //testing
+                })
+            }else{
+                fetch('http://localhost:8080/deleteAttachment/' + this.useremail + '/' + this.email.id + '/' + id, {
+                    method: "DELETE",
+                }).then(res => {
+                    for (let i = 0; i < this.attachments.length; i++) {
+                        if(this.attachments[i].id === id) {
+                            this.attachments.splice(i, 1);
+                        }
+                    }
+                    console.log(res.url) //testing
+                })
+            }
         },
         getPriorityColor(priority) {
             if (priority === 'Urgent') {

@@ -20,7 +20,7 @@
       @open="open(this.currentFolder)" @search="search" />
     <div style="display: flex;">
       <SideBar :currentFolder="currentFolder" :useremail="useremail" @open="open" @openContacts="openContacts"
-        @openDraft="openDraft" :addedFolder="addedFolder" />
+        @openDraft="openDraft" :Folders="Folders" />
       <div>
         <MainBoard v-if="!composing && windowState === 'viewFolders'" :Contacts="Contacts" :listing="listing"
           :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect" @openMail="openMail"
@@ -31,7 +31,7 @@
         <ViewMail v-else-if="!composing && windowState === 'viewMail'" @closeViewMail="windowState = 'viewFolders'"
           :email="email" :useremail="useremail" :currentFolder="currentFolder" />
         <ComposeWindow v-else-if="composing || windowState === 'viewDraft'" @closeWindow="closeCompose"
-          :useremail="useremail" :email="email" :windowState='windowState'/>
+          :useremail="useremail" :email="email" :windowState='windowState' @open="open" @test="test"/>
       </div>
     </div>
     <footer>
@@ -75,6 +75,7 @@ export default {
       composing: false,
       windowState: 'viewFolders',
       Contacts: [],
+      s:[],
       listing: 'Emails',
       addedFolder: ''
     }
@@ -138,7 +139,18 @@ export default {
       })
         .then(res => res.json())
         .then(data => {
+          console.log(data)
           this.username = data.userName;
+          console.log(data.folders)
+          let tempFolders=[];
+
+          for(let folder of data.folders){
+             tempFolders.push({name:folder.name})
+            console.log(folder)
+          }
+          this.Folders=tempFolders
+          console.log("hana "+this.Folders[1].name)
+
         })
         .catch(error => console.error('Error:', error));
     },
@@ -152,6 +164,7 @@ export default {
       this.emails = [];
       this.selectedEmails = [];
       this.listing = 'Emails';
+      this.closeCompose();
       fetch('http://localhost:8080/' + this.useremail + '/' + folder.toLowerCase(), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -185,6 +198,7 @@ export default {
     openContacts() {
       this.listing = 'Contacts';
       this.currentFolder = 'Contacts';
+      this.closeCompose();
       fetch('http://localhost:8080/contact/get/' + this.useremail, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },

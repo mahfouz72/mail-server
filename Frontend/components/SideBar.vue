@@ -7,8 +7,8 @@
                 class="sidebar-button"><i class="pi pi-inbox icon"></i>Inbox</button>
             <button :class="{ selected: currentFolder === 'Sent' }" @click="$emit('open', 'Sent')" class="sidebar-button"><i
                     class="pi pi-send icon"></i>Sent</button>
-            <button :class="{ selected: currentFolder === 'Draft' }" @click="$emit('open', 'Draft')" class="sidebar-button"><i
-                    class="pi pi-clock icon"></i>Draft</button>
+            <button :class="{ selected: currentFolder === 'Draft' }" @click="$emit('open', 'Draft')"
+                class="sidebar-button"><i class="pi pi-clock icon"></i>Draft</button>
             <button :class="{ selected: currentFolder === 'Trash' }" @click="$emit('open', 'Trash')"
                 class="sidebar-button"><i class="pi pi-trash icon"></i>Trash</button>
         </i>
@@ -32,10 +32,10 @@
 <script>
 export default {
     name: 'SideBar',
-    props: ['currentFolder', 'useremail', 'addedFolder'],
+    props: ['currentFolder', 'useremail', 'addedFolder', 'Folders'],
     data() {
         return {
-            Addedfolders: [],
+            Addedfolders: this.Folders,
         };
     },
     watch: {
@@ -43,6 +43,9 @@ export default {
             if (!this.Addedfolders.find(folder => folder.name === val)) {
                 this.Addedfolders.push({ name: val });
             }
+        },
+        Folders: function (newValue) {
+            this.Addedfolders = newValue
         }
     },
     methods: {
@@ -52,12 +55,12 @@ export default {
             };
             let baseName = folder.name;
             let i = 1;
+            if (folder.name === null) {
+                return;
+            }
             while (this.Addedfolders.find(f => f.name === folder.name)) {
                 folder.name = `${baseName}(${i})`;
                 i++;
-            }
-            if (folder.name === null) {
-                return;
             }
             this.Addedfolders.push({ ...folder });
             console.log(this.useremail)
