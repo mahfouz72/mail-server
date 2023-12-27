@@ -81,11 +81,12 @@ export default {
     }
   },
   methods: {
-    login(username, useremail) {
+    login(useremail,password) {
       const userRequest = {
-        userName: username,
         email: useremail,
+        password: password,
       };
+      console.log(userRequest)
       fetch('http://localhost:8080/user/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -95,20 +96,21 @@ export default {
         .then(data => {
           console.log(data)
           if (data === 'true') {
-            this.username = username;
+            this.getUsername(useremail);
             this.useremail = useremail;
             this.userLoggedIn = true;
             this.WelcomeMsg = '';
             this.open('Inbox');
           } else {
-            this.WelcomeMsg = 'Invalid username or email!';
+            this.WelcomeMsg = 'Invalid email or password!';
           }
         })
     },
-    signUp(username, useremail) {
+    signUp(username, useremail,password) {
       const userRequest = {
         userName: username,
         email: useremail,
+        password: password,
       };
       fetch('http://localhost:8080/user/register', {
         method: 'POST',
@@ -122,6 +124,17 @@ export default {
           } else {
             this.WelcomeMsg = 'User created successfully!';
           }
+        })
+        .catch(error => console.error('Error:', error));
+    },
+    getUsername(useremail) {
+      fetch('http://localhost:8080/' + useremail, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.username = data.userName;
         })
         .catch(error => console.error('Error:', error));
     },
