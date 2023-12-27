@@ -26,7 +26,7 @@
                 <button class="pi pi-paperclip attach" @click="this.$refs.fileInput.click();"></button>
                 <div class="attchList">
                     <div v-for="attchmnt in attachments" :key="attchmnt" class="Attachment">
-                        <span class="attchName" @click="download(attchmnt.id)">{{ chopString(attchmnt.name, 11) }}</span>
+                        <span class="attchName" @click="download(attchmnt)">{{ chopString(attchmnt.fileName, 11) }}</span>
                         <button class="pi pi-times attchRemove" @click="detach(attchmnt.id)"></button>
                     </div>
                 </div>
@@ -40,24 +40,28 @@
 export default {
     name: 'ComposeWindow',
     emits: ['closeComposeWindow'],
-    props: ['useremail'],
+    props: ['useremail', 'email', 'windowState'],
     data() {
         return {
-            toField: '',
-            subjectField: '',
-            bodyField: '',
+            toField: this.windowState === 'viewDraft' ? this.email.to[0] : '',
+            subjectField: this.windowState === 'viewDraft' ? this.email.subject : '',
+            bodyField: this.windowState === 'viewDraft' ? this.email.body : '',
             attachment: {
                 id: '',
-                name: ''
+                fileName: '',
             },
-            attachments: [],
-            priority: 'Medium',
+            attachments: this.windowState === 'viewDraft' ? this.email.attachments : [],
+            priority: this.windowState === 'viewDraft' ? this.email.priority.charAt(0).toUpperCase() + this.email.priority.slice(1).toLowerCase() : 'Medium',
             priorityOptions: ['Urgent', 'High', 'Medium', 'Low'],
-            wasDraft: 'false',
+            wasDraft: this.windowState === 'viewDraft' ? true : false,
         }
     },
     methods: {
         saveDraft() {
+            if (this.windowState === 'viewDraft') {
+                this.editDraft();
+                return;
+            }
             this.$emit('closeWindow')
             const mailRequest = {
                 from: this.useremail,
@@ -88,7 +92,7 @@ export default {
                     console.error('Error:', error)
                 });
         },
-        async sendmail() {
+        editDraft() {
             this.$emit('closeWindow')
             const mailRequest = {
                 from: this.useremail,
@@ -106,6 +110,40 @@ export default {
             // Convert the list to a comma-separated string
             attachmentIds = attachmentIds.join(',');
             console.log("mail reuest: " + JSON.stringify(mailRequest))
+            fetch('http://localhost:8080/updateDraft/' + this.useremail + '/' + this.email.id + `?attachmentIds=${attachmentIds}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(mailRequest),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(JSON.stringify(data))
+                })
+                .catch(error => {
+                    console.error('Error:', error)
+                });
+        },
+        async sendmail() {
+            this.$emit('closeWindow')
+            const mailRequest = {
+                id: this.windowState === 'viewDraft' ? this.email.id : '',
+                from: this.useremail,
+                to: [this.toField],
+                subject: this.subjectField,
+                body: this.bodyField,
+                priority: this.priority.toUpperCase(),
+            };
+            let attachmentIds = [];
+            for (let i = 0; i < this.attachments.length; i++) {
+                console.log(this.attachments[i].id)
+                attachmentIds.push(this.attachments[i].id)
+            }
+            console.log(attachmentIds)
+            // Convert the list to a comma-separated string
+            attachmentIds = attachmentIds.join(',');
+            console.log("mail reuest: " + JSON.stringify(mailRequest))
+            console.log("wasDraft: " + this.wasDraft)
+
             fetch(`http://localhost:8080/compose?wasDraft=${this.wasDraft}&attachmentIds=${attachmentIds}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -128,32 +166,39 @@ export default {
                 body: formData
             }).then(result => result.json())
                 .then(result => {
-                    this.attachments.push({ id: result.id, name: result.fileName })
-                    console.log(this.attachment)
-                    console.log(this.attachments)
-                    //alert(JSON.stringify(result))
+                    this.attachments.push({ id: result.id, fileName: result.fileName })
                 });
             this.$refs.fileInput.value = '';
         },
-        download(id) {
-            fetch('http://localhost:8080/download/' + id, {
-                method: "GET"
-            }).then(res => {
-                console.log("downloaded successfully") //testing
-                window.open(res.url)
-            })
+        download(attachment) {
+            const id = attachment.id;
+            if (attachment.contentType == null) {
+                fetch('http://localhost:8080/download/' + id, {
+                    method: "GET"
+                }).then(res => {
+                    console.log("downloaded successfully") //testing
+                    window.open(res.url)
+                })
+            }
+            else {
+                fetch('http://localhost:8080/view/' + this.useremail + '/' + this.email.id + '/' + 'draft' + '/' + id, {
+                    method: "GET"
+                }).then(res => {
+                    console.log("downloaded successfully") //testing
+                    window.open(res.url)
+                })
+            }
         },
         detach(id) {
             fetch('http://localhost:8080/detach/' + id, {
                 method: "DELETE",
             }).then(res => {
                 for (let i = 0; i < this.attachments.length; i++) {
-                    if (this.attachments[i].id === id) {
+                    if(this.attachments[i].id === id) {
                         this.attachments.splice(i, 1);
                     }
                 }
                 console.log(res.url) //testing
-                console.log("deleted successfully")
             })
         },
         getPriorityColor(priority) {
@@ -198,7 +243,7 @@ table {
     font-size: 2.5vh;
     font-weight: bold;
     background-color: transparent;
-    color: rgb(0, 195, 255);
+    color: rgb(28, 140, 201);
 }
 
 .close {
@@ -405,4 +450,5 @@ table {
     background-color: #423e3e;
     /* Lighter handle */
     border-radius: 5px;
-}</style>
+}
+</style>

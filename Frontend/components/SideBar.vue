@@ -3,14 +3,14 @@
         <button :class="{ selected: currentFolder === 'Contacts' }" @click="$emit('openContacts')" class="sidebar-button"><i
                 class="pi pi-users icon"></i>Contacts</button>
         <i style="border-bottom: 0.1vw solid black;border-top: 0.1vw solid black ;padding-bottom: 1.5vh;padding: 0;">
-            <button :class="{ selected: currentFolder === 'Inbox' }" @click="$emit('open', 'Inbox')" class="sidebar-button"><i
-                    class="pi pi-inbox icon"></i>Inbox</button>
+            <button :class="{ selected: currentFolder === 'Inbox' }" @click="$emit('open', 'Inbox')"
+                class="sidebar-button"><i class="pi pi-inbox icon"></i>Inbox</button>
             <button :class="{ selected: currentFolder === 'Sent' }" @click="$emit('open', 'Sent')" class="sidebar-button"><i
                     class="pi pi-send icon"></i>Sent</button>
-            <button :class="{ selected: currentFolder === 'Draft' }" @click="$emit('openDraft')" class="sidebar-button"><i
+            <button :class="{ selected: currentFolder === 'Draft' }" @click="$emit('open', 'Draft')" class="sidebar-button"><i
                     class="pi pi-clock icon"></i>Draft</button>
-            <button :class="{ selected: currentFolder === 'Trash' }" @click="$emit('open', 'Trash')" class="sidebar-button"><i
-                    class="pi pi-trash icon"></i>Trash</button>
+            <button :class="{ selected: currentFolder === 'Trash' }" @click="$emit('open', 'Trash')"
+                class="sidebar-button"><i class="pi pi-trash icon"></i>Trash</button>
         </i>
         <div class="userFolders">
             <button v-for="folder in Addedfolders" :key="folder" class="userFolder" @click="$emit('open', folder.name)">
@@ -32,7 +32,7 @@
 <script>
 export default {
     name: 'SideBar',
-    props: ['currentFolder', 'useremail','addedFolder'],
+    props: ['currentFolder', 'useremail', 'addedFolder'],
     data() {
         return {
             Addedfolders: [],
@@ -233,4 +233,5 @@ export default {
 .icon {
     margin-right: 1vw;
     font-size: 1.2vw;
-}</style>
+}
+</style>

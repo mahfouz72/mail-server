@@ -1,7 +1,7 @@
 <template>
     <div class="mainboard">
         <div v-if="listing === 'Emails'" class="email-list">
-            <div class="email" v-for="email in paginatedElements" :key="email" @click="this.$emit('openMail', email.id)">
+            <div class="email" v-for="email in paginatedElements" :key="email" @click="openMail(email.id)">
                 <div v-if="multiselect" class="checkbox">
                     <input type="checkbox" :value="email.id" @click.stop="selectEmail(email)" v-model="checkedEmails">
                 </div>
@@ -27,21 +27,23 @@
             <div class="contact" v-for="contact in paginatedElements" :key="contact">
                 <div class="contactTitle">
                     <i class="pi pi-user" style="font-size: 3vh;"></i>
-                    <div class="contactName" @click="this.$emit('RenameContact',contact)">
+                    <div class="contactName" @click="this.$emit('RenameContact', contact)">
                         {{ contact.name }}
                     </div>
-                    <i class="pi pi-plus addEmail icon" @click.stop="this.$emit('AddEmail',contact)"></i>
-                    <i class="pi pi-times deleteContact icon" @click.stop="this.$emit('DeleteContact',contact)"></i>
+                    <i class="pi pi-plus addEmail icon" @click.stop="this.$emit('AddEmail', contact)"></i>
+                    <i class="pi pi-times deleteContact icon" @click.stop="this.$emit('DeleteContact', contact)"></i>
                 </div>
                 <div class="contactEmailList">
                     <div class="contactEmail" v-for="email in contact.emails" :key="email">
                         <i class="contactEmailName">{{ email }}</i>
-                        <i class="pi pi-trash deleteContactEmail icon" @click.stop="this.$emit('DeleteContactEmail',contact,email)"></i>
-                        <i class="pi pi-file-edit renameContactEmail icon" @click.stop="this.$emit('RenameContactEmail',contact,email)"></i>
+                        <i class="pi pi-trash deleteContactEmail icon"
+                            @click.stop="this.$emit('DeleteContactEmail', contact, email)"></i>
+                        <i class="pi pi-file-edit renameContactEmail icon"
+                            @click.stop="this.$emit('RenameContactEmail', email)"></i>
                     </div>
                 </div>
             </div>
-            <div v-if="this.currentPage==totalPages || this.Contacts.length==0" class="addContact">
+            <div v-if="this.currentPage == totalPages || this.Contacts.length == 0" class="addContact">
                 <button class="pi pi-plus addContactbtn" @click="this.$emit('AddContact')"></button>
             </div>
         </div>
@@ -78,12 +80,12 @@ export default {
     },
     computed: {
         paginatedElements() {
-            if (this.listing === 'Emails'){
+            if (this.listing === 'Emails') {
                 const startIndex = (this.currentPage - 1) * this.EmailsPerPage;
                 const endIndex = startIndex + this.EmailsPerPage;
                 return this.emails.slice(startIndex, endIndex);
             }
-            else if (this.listing === 'Contacts'){
+            else if (this.listing === 'Contacts') {
                 const startIndex = (this.currentPage - 1) * this.ContactsPerPage;
                 const endIndex = startIndex + this.ContactsPerPage;
                 return this.Contacts.slice(startIndex, endIndex);
@@ -93,12 +95,11 @@ export default {
         totalPages() {
             if (this.listing === 'Emails')
                 return Math.ceil(this.emails.length / this.EmailsPerPage);
-            else if (this.listing === 'Contacts'){
-                if(this.Contacts.length % this.ContactsPerPage==0){
-                    console.log(Math.ceil(this.Contacts.length/ this.ContactsPerPage)+1);
-                    return (Math.ceil(this.Contacts.length/ this.ContactsPerPage)+1);
+            else if (this.listing === 'Contacts') {
+                if (this.Contacts.length % this.ContactsPerPage == 0) {
+                    return (Math.ceil(this.Contacts.length / this.ContactsPerPage) + 1);
                 }
-                else return Math.ceil(this.Contacts.length/ this.ContactsPerPage);
+                else return Math.ceil(this.Contacts.length / this.ContactsPerPage);
             }
             else return [];
         },
@@ -128,7 +129,7 @@ export default {
                 return [{ label: 'From: ', value: email.from }];
             } else if (this.currentFolder === 'Sent' || this.currentFolder === 'Draft') {
                 return [{ label: 'To: ', value: email.to }];
-            } else if (this.currentFolder === 'Trash') {
+            } else{
                 return [{ label: 'From: ', value: email.from }, { label: 'To:', value: email.to }];
             }
         },
@@ -156,6 +157,12 @@ export default {
             console.log(this.selEmails);
             this.$emit('update:selectedEmails', this.selEmails);
         },
+        openMail(id){
+            if(this.currentFolder==='Draft')
+                this.$emit('openDraft', id);
+            else
+                this.$emit('openMail', id);
+        },
         moveEmail(email) {
             this.selEmails.push(email)
             console.log(this.selEmails)
@@ -179,6 +186,7 @@ export default {
     margin: 0;
     border-bottom: 0.1vw solid black;
 }
+
 .email-list {
     height: 90%;
     width: 100%;
@@ -187,6 +195,7 @@ export default {
     padding-left: 1vw;
     padding-top: 1.5vh;
 }
+
 .email {
     background-color: rgba(127, 129, 132, 0.821);
     height: 6.5vh;
@@ -200,11 +209,13 @@ export default {
     font-size: 2vh;
     color: black;
 }
+
 .email:hover {
     background-color: rgba(127, 129, 132, 0.5);
     color: white;
     cursor: pointer;
 }
+
 .user {
     display: flex;
     flex-direction: column;
@@ -217,6 +228,7 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .content {
     display: flex;
     flex-direction: column;
@@ -229,6 +241,7 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .date {
     display: flex;
     flex-direction: column;
@@ -236,6 +249,7 @@ export default {
     width: 8%;
     height: 40%;
 }
+
 .emailOptions {
     position: relative;
     left: 5.5vw;
@@ -247,26 +261,33 @@ export default {
     height: 100%;
     color: black;
 }
+
 .moveEmail {
     font-size: 3.1vh;
     padding: 1vh;
 }
+
 .deleteEmail {
     font-size: 3vh;
     padding: 1vh;
 }
+
 .moveEmail:hover {
     color: teal;
 }
+
 .deleteEmail:hover {
     color: red;
 }
+
 .email .emailOptions {
     display: none;
 }
+
 .email:hover .emailOptions {
     display: flex;
 }
+
 .checkbox {
     display: flex;
     flex-direction: column;
@@ -274,9 +295,11 @@ export default {
     width: 5%;
     height: 40%;
 }
+
 .pagination {
     margin-top: 2vh;
 }
+
 .paginationBtn {
     background-color: transparent;
     border: none;
@@ -285,14 +308,17 @@ export default {
     ;
     cursor: pointer;
 }
+
 .paginationBtn:disabled {
     color: grey;
 }
+
 .page-numbers {
     display: inline-flex;
     font-size: 1vh;
     transform: translate(0, -0.5vh);
 }
+
 .nmbrBtn {
     background-color: transparent;
     border: none;
@@ -300,9 +326,11 @@ export default {
     font-size: 2vh;
     cursor: pointer;
 }
+
 .nmbrBtn.active {
     color: grey;
 }
+
 .contacts-list {
     display: flex;
     flex-wrap: wrap;
@@ -312,6 +340,7 @@ export default {
     width: 100%;
     padding: 1vw;
 }
+
 .contact {
     background-color: rgb(118, 113, 156);
     width: 23.8%;
@@ -324,12 +353,14 @@ export default {
     align-items: flex-start;
     padding: 1vw;
 }
+
 .addContact {
     width: 23.8%;
     height: 35vh;
     margin: 1vh;
     border-radius: 1vw;
 }
+
 .addContactbtn {
     background-color: rgba(62, 65, 68, 0.763);
     border-radius: 2vw;
@@ -340,9 +371,11 @@ export default {
     height: 100%;
     width: 100%;
 }
+
 .addContactbtn:hover {
     background-color: rgba(22, 29, 29, 0.94);
 }
+
 .contactTitle {
     display: flex;
     flex-direction: row;
@@ -352,6 +385,7 @@ export default {
     border-bottom: 0.3vh solid black;
     color: black;
 }
+
 .contactName {
     padding-top: 0.5vh;
     text-align: left;
@@ -361,6 +395,7 @@ export default {
     margin-left: 0.4vw;
     overflow: hidden;
 }
+
 .contactEmailList {
     display: flex;
     flex-direction: column;
@@ -372,6 +407,7 @@ export default {
     overflow-y: auto;
     overflow-x: hidden;
 }
+
 .contactEmail {
     display: flex;
     flex-direction: row;
@@ -384,6 +420,7 @@ export default {
     color: black;
     padding: 1vh;
 }
+
 .contactEmailName {
     text-align: left;
     width: 85%;
@@ -391,6 +428,7 @@ export default {
     margin-left: 0.4vw;
     overflow: hidden;
 }
+
 .deleteContactEmail {
     font-size: 2vh;
     padding: 0.5vh;
@@ -398,6 +436,7 @@ export default {
     cursor: pointer;
     font-weight: bold;
 }
+
 .renameContactEmail {
     font-size: 2vh;
     padding: 0.5vh;
@@ -405,56 +444,71 @@ export default {
     cursor: pointer;
     font-weight: bold;
 }
+
 .deleteContactEmail:hover {
     color: red;
 }
+
 .renameContactEmail:hover {
     color: green;
 }
+
 .contact .deleteContactEmail {
     display: none;
 }
+
 .contact:hover .deleteContactEmail {
     display: block;
 }
+
 .contact .renameContactEmail {
     display: none;
 }
+
 .contact:hover .renameContactEmail {
     display: block;
 }
-.deleteContact{
+
+.deleteContact {
     padding: 0.5vh;
     font-size: 2vh;
     color: black;
     cursor: pointer;
     font-weight: bold;
 }
-.addEmail{
+
+.addEmail {
     padding: 0.5vh;
     font-size: 2vh;
     color: black;
     cursor: pointer;
     font-weight: bold;
 }
+
 .deleteContact:hover {
     color: red;
 }
+
 .addEmail:hover {
     color: green;
 }
-.contact .deleteContact{
+
+.contact .deleteContact {
     display: none;
 }
-.contact:hover .deleteContact{
+
+.contact:hover .deleteContact {
     display: block;
 }
-.contact .addEmail{
+
+.contact .addEmail {
     display: none;
 }
-.contact:hover .addEmail{
+
+.contact:hover .addEmail {
     display: block;
 }
+
 .contactEmail {
     text-align: left;
     width: 95%;
@@ -462,12 +516,13 @@ export default {
     font-size: 2vh;
     margin-bottom: 0.5vh;
 }
+
 ::-webkit-scrollbar {
     width: 0.5vw;
     background-color: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
     background-color: rgba(3, 4, 5, 0.175);
     border-radius: 0.5vw;
-}
-</style>
+}</style>

@@ -16,17 +16,11 @@
         </span>
         <span class="search-container">
             <input class="search-field" type="text" v-model="value" @input="search" placeholder="Search" />
-            <!--<button class="pi pi-search icon searchbtn"></button>-->
         </span>
-         <!--filterCriteria-->
-         <div class="multiselect" >
-            <MultiSelect
-              v-model="selectedFilters"
-              :options="filterOptions"
-              placeholder="Select Filters"
-              :maxSelectedLabels="3"
-              @change="search"></MultiSelect>
-         </div>
+        <div v-if="currentFolder !== 'Contacts'" class="multiselect">
+            <MultiSelect v-model="selectedFilters" :options="filterOptions" placeholder="Select Filters"
+                :maxSelectedLabels="3" @change="search"></MultiSelect>
+        </div>
         <span v-if="currentFolder !== 'Contacts'" class="sortOptns">
             <button :class="{ selected: sortOption === 'date' }" class="sortOptn defaultbtn"
                 @click="sort('date')">Default</button>
@@ -50,13 +44,13 @@ import MultiSelect from 'primevue/multiselect';
 
 export default {
     name: 'NavBar',
-    components: {MultiSelect},
+    components: { MultiSelect },
     data() {
         return {
             value: '',
             items: ['Youssif', 'Ahmed', 'Mohamed'],
             searchResults: [],
-            sortOption: 'default',
+            sortOption: 'date',
             sortOrder: 'descending',
             selectedFilters: [],
             filterOptions: ['Sender', 'Receiver', 'Subject', 'Body'],
@@ -76,16 +70,16 @@ export default {
             }
             this.$emit('sort', this.sortOption, this.sortOrder);
         },
-        search() {
-            console.log(this.value,this.selectedFilters)
-            this.$emit('search', this.value,this.selectedFilters);
+        search(){
+            console.log(this.value);
+            this.$emit('search', this.value, this.selectedFilters);
         },
     },
 };
 </script>
 
 <style scoped>
-    .navbar {
+.navbar {
     position: relative;
     background-color: rgba(7, 10, 10, 0.821);
     height: 5.7vh;
@@ -157,7 +151,7 @@ export default {
 
 .search-container {
     margin-top: 1vh;
-    width: 30vw;
+    width: 35vw;
     position: relative;
     display: inline-block;
 }
@@ -170,21 +164,6 @@ export default {
     font-size: 2vh;
     background-color: rgba(32, 30, 30, 0.863);
     color: aliceblue;
-}
-
-.searchbtn:hover {
-    color: white;
-}
-
-.pi-search {
-    position: absolute;
-    right: 0.5vw;
-    top: 0.5vh;
-    background: none;
-    border: none;
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
 }
 
 .icon {
@@ -238,9 +217,10 @@ export default {
     position: absolute;
     right: 0.5vw;
 }
-.multiselect{
-  display:inline-block;
-  height: 25px;
-  width: 100px;
+
+.multiselect {
+    display: inline-block;
+    height: 25px;
+    width: 100px;
 }
 </style>

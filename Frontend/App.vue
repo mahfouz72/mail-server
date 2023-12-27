@@ -14,25 +14,24 @@
         </button>
       </span>
     </div>
-
     <NavBar :currentFolder="currentFolder" :multiselect="multiselect" :composing="composing"
-      @toggleMultiSelect="toggleMultiSelect" @compose="composing = !composing" @sort="sort"
-            @moveEmail="moveEmail(this.selectedEmails)" @deleteEmail="deleteEmail(this.selectedEmails)"
-            @open="open(this.currentFolder)" @search="search"/>
-
+      @toggleMultiSelect="toggleMultiSelect" @compose="compose" @sort="sort"
+      @moveEmail="moveEmail(this.selectedEmails)" @deleteEmail="deleteEmail(this.selectedEmails)"
+      @open="open(this.currentFolder)" @search="search" />
     <div style="display: flex;">
       <SideBar :currentFolder="currentFolder" :useremail="useremail" @open="open" @openContacts="openContacts"
-        @openDraft="openDraft" :addedFolder="addedFolder"/>
+        @openDraft="openDraft" :addedFolder="addedFolder" />
       <div>
-        <MainBoard v-if="!composing && windowState === 'viewFolders'" 
-          :Contacts="Contacts" :listing="listing" :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect"
-          @openMail="openMail" @moveEmail="moveEmail" @deleteEmail="deleteEmail" @AddContact="AddContact" @AddEmail="AddEmail"
-          @DeleteContactEmail="DeleteContactEmail" @RenameContactEmail="RenameContactEmail"
+        <MainBoard v-if="!composing && windowState === 'viewFolders'" :Contacts="Contacts" :listing="listing"
+          :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect" @openMail="openMail"
+          @openDraft="openDraft" @moveEmail="moveEmail" @deleteEmail="deleteEmail" @AddContact="AddContact"
+          @AddEmail="AddEmail" @DeleteContactEmail="DeleteContactEmail" @RenameContactEmail="RenameContactEmail"
           @RenameContact="RenameContact" @DeleteContact="DeleteContact" v-model:selectedEmails="selectedEmails">
         </MainBoard>
         <ViewMail v-else-if="!composing && windowState === 'viewMail'" @closeViewMail="windowState = 'viewFolders'"
           :email="email" :useremail="useremail" :currentFolder="currentFolder" />
-        <ComposeWindow v-else @closeWindow="composing = false" :useremail="useremail" />
+        <ComposeWindow v-else-if="composing || windowState === 'viewDraft'" @closeWindow="closeCompose"
+          :useremail="useremail" :email="email" :windowState='windowState'/>
       </div>
     </div>
     <footer>
@@ -77,7 +76,7 @@ export default {
       windowState: 'viewFolders',
       Contacts: [],
       listing: 'Emails',
-      addedFolder:''
+      addedFolder: ''
     }
   },
   methods: {
@@ -186,22 +185,7 @@ export default {
     openContacts() {
       this.listing = 'Contacts';
       this.currentFolder = 'Contacts';
-      this.Contacts = [{ name: 'userkjbakjdnkjdflbnweojldnfolwenofjewofjbewnklfjnewj2', emails: ['user21@cse.covddsdnkdsfjksdfbskjdhbfksdjbfkjdsbm', 'user22@cse.com', 'user21@cse.com', 'user22@cse.com', 'user21@cse.com', 'user22@cse.com', 'user21@cse.com', 'user22@cse.com', 'user21@cse.com', 'user22@cse.com'] }, { name: 'user3', emails: ['user31@cse.com', 'user32@cse.com'] }, { name: 'user4', emails: ['user41@cse.com', 'user42@cse.com'] }];
-    },
-    openDraft() {
-      this.windowState = 'viewMail';
-    },
-    toggleMultiSelect() {
-      console.log(this.selectedEmails);
-      this.multiselect = !this.multiselect;
-      this.selectedEmails = [];
-    },
-    openMail(id) {
-      this.windowState = 'viewMail';
-      this.email = this.emails.find(email => email.id === id);
-    },
-    sort(option, order) {
-      fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}?sortingCriteria=${option}&sortingOrder=${order}`, {
+      fetch('http://localhost:8080/contact/get/' + this.useremail, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })
@@ -209,25 +193,98 @@ export default {
         .then(data => {
           console.log(JSON.stringify(data))
           if (data.length > 0) {
-            this.emails = [];
-            data.forEach(email => {
-              this.emails.push({
-                id: email.id,
-                from: email.from,
-                to: email.to,
-                subject: email.subject,
-                body: email.body,
-                date: email.dateTime,
-                priority: email.priority,
-                attachments: email.attachments
+            this.Contacts = [];
+            data.forEach(contact => {
+              this.Contacts.push({
+                name: contact.name,
+                emails: contact.emailAddresses
               })
             });
+          } else {
+            this.Contacts = [];
           }
-          console.log(this.emails)
         })
-        .catch(error => {
-          console.error('Error:', error)
-        });
+    },
+    toggleMultiSelect() {
+      console.log(this.selectedEmails);
+      this.multiselect = !this.multiselect;
+      this.selectedEmails = [];
+    },
+    compose() {
+      this.composing = true;
+      this.email = {
+        id: '',
+        from: this.useremail,
+        to: '',
+        subject: '',
+        body: '',
+        date: '',
+        priority: '',
+        attachments: []
+      };
+    },
+    closeCompose() {
+      this.composing = false;
+      this.windowState = 'viewFolders';
+    },
+    openDraft(id) {
+      this.windowState = 'viewDraft';
+      this.email = this.emails.find(email => email.id === id);
+      console.log(this.email);
+    },
+    openMail(id) {
+      this.windowState = 'viewMail';
+      this.email = this.emails.find(email => email.id === id);
+    },
+    sort(option, order) {
+      if(this.currentFolder === 'Contacts'){
+        fetch(`http://localhost:8080/contact/sort/` + this.useremail + '/' + order, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        })
+          .then(res => res.json())
+          .then(data => {
+            this.Contacts = [];
+            console.log(data);
+            data.forEach(contact => {
+              this.Contacts.push({
+                name: contact.name,
+                emails: contact.emailAddresses
+              })
+            });
+          })
+          .catch(error => {
+            console.error('Error:', error)
+          });
+      }else{
+        fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}?sortingCriteria=${option}&sortingOrder=${order}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        })
+          .then(res => res.json())
+          .then(data => {
+            console.log(JSON.stringify(data))
+            if (data.length > 0) {
+              this.emails = [];
+              data.forEach(email => {
+                this.emails.push({
+                  id: email.id,
+                  from: email.from,
+                  to: email.to,
+                  subject: email.subject,
+                  body: email.body,
+                  date: email.dateTime,
+                  priority: email.priority,
+                  attachments: email.attachments
+                })
+              });
+            }
+            console.log(this.emails)
+          })
+          .catch(error => {
+            console.error('Error:', error)
+          });
+      }
     },
     deleteEmail(selEmails) {
       console.log('selected emails:');
@@ -247,45 +304,120 @@ export default {
     AddContact() {
       let contact = {
         name: prompt("Please enter contact name", "New Contact"),
-        emailAddresses: [prompt("Please enter email","NewGuest@CSE.com")]
+        emailAddress: prompt("Please enter email", "NewGuest@CSE.com")
       };
-      fetch('http://localhost:8080/contact/create/' + this.useremail,{
-        method: "POST",
+      fetch('http://localhost:8080/contact/create/' + this.useremail + '/' + contact.name + '/' + contact.emailAddress,{
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contact),
-      }).then(
-        console.log("Contact created successfully")
-      )
+      }).then(res => res.text())
+        .then(data => {
+          if(data === 'Contact added successfully'){
+            console.log(data);
+            this.openContacts();
+          }else if(data === 'Another Contact Has This Email'){
+            alert(data);
+          }else if(data === 'No Such User Found'){
+            alert('Invalid email address');
+          }
+        })
       this.openContacts();
     },
     RenameContact(contact) {
       let newName = prompt("Please enter new contact name", contact.name);
-      contact.name = newName;
+      fetch('http://localhost:8080/contact/rename/' + this.useremail + '/' + newName + '/' + contact.emails[0], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      }).then(res => res.text())
+        .then(data => {
+          this.openContacts();
+          console.log(data);
+        })
     },
-    DeleteContact(contact){
-      this.Contacts = this.Contacts.filter(c => c.name !== contact.name);
+    DeleteContact(contact) {
+      fetch('http://localhost:8080/contact/delete/' + this.useremail + '/' + contact.emails[0], {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      }).then(res => res.text())
+        .then(data => {
+          this.openContacts();
+          console.log(data);
+        })
     },
     AddEmail(contact) {
       let email = prompt("Please enter email", "NewEmail@cse.com");
-      contact.emails.push(email);
+      fetch('http://localhost:8080/contact/add/' + this.useremail + '/' + contact.emails[0] + '/' + email, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      }).then(res => res.text())
+        .then(data => {
+          if(data === 'Contact email successfully added'){
+            this.openContacts();
+          }else if(data === 'Another Contact Has This Email'){
+            alert(data);
+          }else if(data === 'No Such User Found'){
+            alert('Invalid email address');
+          }
+        })
     },
-    RenameContactEmail(contact, email) {
+    RenameContactEmail(email) {
       let newName = prompt("Please enter new email", email);
-      contact.emails = contact.emails.filter(e => e !== email);
-      contact.emails.push(newName);
+      fetch('http://localhost:8080/contact/reset/' + this.useremail + '/' + email + '/' + newName,{
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      }).then(res => res.text())
+        .then(data => {
+          if(data === 'Contact email successfully reset'){
+            this.openContacts();
+          }else if(data === 'Another Contact Has This Email'){
+            alert(data);
+          }else if(data === 'No Such User Found'){
+            alert('Invalid email address');
+          }
+        })
     },
     DeleteContactEmail(contact, email) {
-      contact.emails = contact.emails.filter(e => e !== email);
-    },
-    search(filterValue,filterCriteria){
-      filterCriteria = filterCriteria.join(',')
-      console.log(filterValue,filterCriteria);
-      fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}/filter?filterCriteria=${filterCriteria}&filterValue=${filterValue}`, {
-        method: 'GET',
+      fetch('http://localhost:8080/contact/remove/' + this.useremail + '/' + contact.emails[0] + '/' + email, {
+        method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-      })
-        .then(res => res.json())
+      }).then(res => res.text())
         .then(data => {
+          this.openContacts();
+          console.log(data);
+        })
+    },
+    search(filterValue, filterCriteria) {
+      if(this.currentFolder === 'Contacts'){
+        if(filterValue === ''){
+          this.openContacts();
+          return;
+        }
+        fetch(`http://localhost:8080/contact/search/` + this.useremail + '/' + filterValue, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        })
+          .then(res => res.json())
+          .then(data => {
+            this.Contacts = [];
+            console.log(data);
+            data.forEach(contact => {
+              this.Contacts.push({
+                name: contact.name,
+                emails: contact.emailAddresses
+              })
+            });
+          })
+          .catch(error => {
+            console.error('Error:', error)
+          });
+      }else{
+        filterCriteria = filterCriteria.join(',')
+        console.log(filterValue, filterCriteria);
+        fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}/filter?filterCriteria=${filterCriteria}&filterValue=${filterValue}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        })
+          .then(res => res.json())
+          .then(data => {
             this.emails = [];
             data.forEach(email => {
               this.emails.push({
@@ -299,26 +431,27 @@ export default {
                 attachments: email.attachments
               })
             });
-          console.log(this.emails)
-        })
-        .catch(error => {
-          console.error('Error:', error)
-        });
+            console.log(this.emails)
+          })
+          .catch(error => {
+            console.error('Error:', error)
+          });
+      }
     },
-    moveEmail(selEmails){
+    moveEmail(selEmails) {
       let folder = prompt("Please enter folder name", "New Folder");
       this.addedFolder = folder
       console.log(selEmails);
-      for(let mail of selEmails){
-        if(mail === null) continue
+      for (let mail of selEmails) {
+        if (mail === null) continue
         fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}/${folder}/${mail.id}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
         }).then(res => res.json())
-            .then(data => {
-               console.log(data)
-               this.emails = this.emails.filter(e => e.id !== mail.id);
-            })
+          .then(data => {
+            console.log(data)
+            this.emails = this.emails.filter(e => e.id !== mail.id);
+          })
       }
       this.selectedEmails = [];
     }

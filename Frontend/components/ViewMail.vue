@@ -34,13 +34,13 @@
 <script>
 export default {
     name: 'ViewMail',
-    props: ['email','useremail','currentFolder'],
+    props: ['email', 'useremail', 'currentFolder'],
     methods: {
         download(id) {
             console.log(id);
             //let folderName= 'sent' // probs current folder must come here 
             console.log(this.currentFolder.toLowerCase())
-            fetch('http://localhost:8080/view/' + this.useremail+'/'+this.email.id+'/'+this.currentFolder.toLowerCase()+'/'+id,{
+            fetch('http://localhost:8080/view/' + this.useremail + '/' + this.email.id + '/' + this.currentFolder.toLowerCase() + '/' + id, {
                 method: "GET"
             }).then(res => {
                 console.log("downloaded successfully") //testing
