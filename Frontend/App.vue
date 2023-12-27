@@ -14,12 +14,15 @@
         </button>
       </span>
     </div>
+
     <NavBar :currentFolder="currentFolder" :multiselect="multiselect" :composing="composing"
       @toggleMultiSelect="toggleMultiSelect" @compose="composing = !composing" @sort="sort"
-      @deleteEmail="deleteEmail(this.selectedEmails)" @open="open(this.currentFolder)" @search="search"/>
+            @moveEmail="moveEmail(this.selectedEmails)" @deleteEmail="deleteEmail(this.selectedEmails)"
+            @open="open(this.currentFolder)" @search="search"/>
+
     <div style="display: flex;">
       <SideBar :currentFolder="currentFolder" :useremail="useremail" @open="open" @openContacts="openContacts"
-        @openDraft="openDraft" />
+        @openDraft="openDraft" :addedFolder="addedFolder"/>
       <div>
         <MainBoard v-if="!composing && windowState === 'viewFolders'" 
           :Contacts="Contacts" :listing="listing" :emails="emails" :currentFolder="currentFolder" :multiselect="multiselect"
@@ -73,7 +76,8 @@ export default {
       composing: false,
       windowState: 'viewFolders',
       Contacts: [],
-      listing: 'Emails'
+      listing: 'Emails',
+      addedFolder:''
     }
   },
   methods: {
@@ -283,6 +287,23 @@ export default {
           console.error('Error:', error)
         });
     },
+    moveEmail(selEmails){
+      let folder = prompt("Please enter folder name", "New Folder");
+      this.addedFolder = folder
+      console.log(selEmails);
+      for(let mail of selEmails){
+        if(mail === null) continue
+        fetch(`http://localhost:8080/${this.useremail}/${this.currentFolder}/${folder}/${mail.id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        }).then(res => res.json())
+            .then(data => {
+               console.log(data)
+               this.emails = this.emails.filter(e => e.id !== mail.id);
+            })
+      }
+      this.selectedEmails = [];
+    }
   },
 }
 </script>
