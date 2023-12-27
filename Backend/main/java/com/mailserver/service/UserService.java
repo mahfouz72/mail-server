@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,10 +15,12 @@ public class UserService {
     private static UserService instance = new UserService();
     private HashMap<String,User> users;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    String filePath = "src\\main\\java\\com\\mailserver\\database\\";
 
     private UserService() {
         users = new HashMap<>();
     }
+
     //Singleton instance to be used in the whole application
     public static UserService getInstance() {
         if(instance == null)
@@ -26,6 +29,7 @@ public class UserService {
     }
     public User addUser(User user) {
         users.put(user.getEmail(),user);
+        saveUsers(user.getEmail());
         return user;
     }
     public User getUserByEmail(String email) {
@@ -35,30 +39,30 @@ public class UserService {
         return new ArrayList<>(users.values());
     }
 
-    public void saveUsers(){
+    public void saveUsers(String email){
         try{
+            String path = filePath + email.split("@")[0]+".json";
             objectMapper.findAndRegisterModules();
-            objectMapper.writeValue(new File("users.json"),this.getAllUsers());
+            objectMapper.writeValue(new File(path),this.getUserByEmail(email));
+
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-    public void LoadUsers(){
+    public void loadUsers(){
         try{
-            objectMapper.findAndRegisterModules();
-            List<User> users = objectMapper.readValue(new File("users.json"),
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, User.class));
+            File[] files = new File("src\\main\\java\\com\\mailserver\\database")
+                    .listFiles((dir, name) -> name.endsWith(".json"));
 
-            users.forEach(this::addUser);
+            objectMapper.findAndRegisterModules();
+            if (files != null) {
+                for (File file : files) {
+                    User user = objectMapper.readValue(file, User.class);
+                    addUser(user);
+                }
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-
-    public boolean logIn(String email, String userName) {
-        if(getUserByEmail(email) == null)
-            return false;
-        return getUserByEmail(email).getUserName().equals(userName);
     }
 }

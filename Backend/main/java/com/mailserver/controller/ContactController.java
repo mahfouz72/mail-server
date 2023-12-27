@@ -20,32 +20,32 @@ public class ContactController {
     // Create contact
     @PostMapping("/contact/create/{userEmailAddress}/{contactName}/{contactEmailAddress}")
     public String createContact(@PathVariable String userEmailAddress, @PathVariable String contactName,
-            @PathVariable String contactEmailAddress) {
+                                @PathVariable String contactEmailAddress) {
         return contactService.createContact(userEmailAddress, contactName, contactEmailAddress);
     }
 
     // edit contact
     @PostMapping("/contact/rename/{userEmailAddress}/{contactName}/{contactEmailAddress}")
     public String renameContact(@PathVariable String userEmailAddress, @PathVariable String contactName,
-            @PathVariable String contactEmailAddress) {
+                                @PathVariable String contactEmailAddress) {
         return contactService.renameContact(userEmailAddress, contactName, contactEmailAddress);
     }
 
     @PostMapping("/contact/reset/{userEmailAddress}/{contactEmailAddress}/{newContactEmailAddress}")
     public String resetContact(@PathVariable String userEmailAddress, @PathVariable String contactEmailAddress,
-            @PathVariable String newContactEmailAddress) {
+                               @PathVariable String newContactEmailAddress) {
         return contactService.resetContact(userEmailAddress, contactEmailAddress, newContactEmailAddress);
     }
 
     @PostMapping("/contact/add/{userEmailAddress}/{contactEmailAddress}/{newContactEmailAddress}")
     public String addEmail(@PathVariable String userEmailAddress, @PathVariable String contactEmailAddress,
-            @PathVariable String newContactEmailAddress){
+                           @PathVariable String newContactEmailAddress){
         return contactService.addEmail(userEmailAddress, contactEmailAddress, newContactEmailAddress);
     }
-    
+
     @DeleteMapping("/contact/remove/{userEmailAddress}/{contactEmailAddress}/{removedContactEmailAddress}")
     public String removeEmail(@PathVariable String userEmailAddress, @PathVariable String contactEmailAddress,
-            @PathVariable String removedContactEmailAddress){
+                              @PathVariable String removedContactEmailAddress){
         return contactService.removeEmail(userEmailAddress, contactEmailAddress, removedContactEmailAddress);
     }
 

@@ -56,16 +56,20 @@ public class MailController {
     }
 
     @PostMapping("/createDraft/{email}")
-    public Mail createDraft(@PathVariable String email,@RequestBody Mail mail){
-        return draftService.addDraft(email,mail);
+    public Mail createDraft(@PathVariable String email, @RequestBody Mail mail,
+                            @RequestParam ArrayList<String> attachmentIds) {
+        return draftService.addDraft(email, mail, attachmentIds);
     }
+
     @PostMapping("/updateDraft/{email}/{id}")
-    public List<Mail> updateDraft(@PathVariable String email,@PathVariable String id,@RequestBody Mail newDraft){
-        return draftService.updateDraft(email,id,newDraft);
+    public List<Mail> updateDraft(@PathVariable String email, @PathVariable String id, @RequestBody Mail newDraft ,
+                                  @RequestParam ArrayList<String> attachmentIds) {
+        return draftService.updateDraft(email, id, newDraft, attachmentIds);
     }
+
     @DeleteMapping("/deleteDraft/{email}/{id}")
-    public List<Mail> deleteDraft(@PathVariable String email,@PathVariable String id){
-        return draftService.deleteDraft(email,id);
+    public List<Mail> deleteDraft(@PathVariable String email, @PathVariable String id) {
+        return draftService.deleteDraft(email, id);
     }
 
 }

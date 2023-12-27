@@ -1,16 +1,19 @@
 package com.mailserver.model;
 
 import com.mailserver.model.mail.Mail;
+import com.mailserver.service.UserService;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.stereotype.Component;
 
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class User {
+public class User implements Serializable {
     @NotBlank(message = "Username cannot be empty")
     private String userName;
     @NotBlank(message = "Email cannot be blank")
@@ -18,7 +21,8 @@ public class User {
     @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+com$",
             message = "Invalid email format.")
     private String email;
-   private String password;
+
+    private String password;
     private List<Mail> sent;
     private List<Mail> inbox;
     private List<Contact> contacts;
@@ -76,6 +80,7 @@ public class User {
     }
 
     public List<Contact> getContacts() {
+
         return contacts;
     }
 
@@ -112,5 +117,16 @@ public class User {
 
     public void setDrafts(List<Mail> drafts) {
         this.drafts = drafts;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", sent=" + sent +
+                ", inbox=" + inbox +
+                '}';
     }
 }

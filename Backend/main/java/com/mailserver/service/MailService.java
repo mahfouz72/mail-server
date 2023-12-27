@@ -54,15 +54,15 @@ public class MailService {
 
         if(folderName.equals("trash")){
             currentUser.getTrash().removeIf(mail -> mail.getId().equals(id));
+            userService.saveUsers(email);
             return currentUser.getTrash();
         }
-
         return moveMail(email,folderName,"trash",id);
     }
     public List<Mail> moveMail(String email, String fromFolder, String toFolder, String id) {
-        
-         //if to folder doesn't exist, create it
-        if(folderService.getFolder(email,toFolder) == null){
+
+        //it to folder doesn't exist, create it
+        if(!folderService.folderExists(email,toFolder)){
             folderService.createFolder(email,toFolder);
         }
 
@@ -81,14 +81,15 @@ public class MailService {
             Folder to = folderService.getFolder(email,toFolder);
             to.getMails().add(mailToBeMoved);
         }
-       return mails;
+
+        userService.saveUsers(email);
+        return mails;
     }
 
     public List<Mail> filterMails(String email, String folderName, List<String> filterCriteria, String filterValue) {
 
         List<Mail> mails = getMailsByFolderName(email,folderName);
         OrCriteria filter = new OrCriteria();
-        System.out.println(filterCriteria);
 
         // if no filter criteria is specified, filter by all criteria
         if(filterCriteria.isEmpty()){

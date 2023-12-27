@@ -64,4 +64,17 @@ public class AttachmentService {
         }
         return downloadFile(attachment);
     }
+    public void deleteAttachment(String email, String mailId, String attachmentId) {
+        List<Mail> mails = mailService.getMailsByFolderName(email, "draft");
+        for (Mail mail : mails) {
+            if (Objects.equals(mail.getId(), mailId)) {
+                List<Attachment> attachments = mail.getAttachments();
+                for (Attachment value : attachments) {
+                    if (Objects.equals(value.getId(), attachmentId)) {
+                        attachments.remove(value);
+                    }
+                }
+            }
+        }
+    }
 }

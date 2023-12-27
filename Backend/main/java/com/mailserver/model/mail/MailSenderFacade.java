@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class MailSenderFacade {
@@ -23,14 +24,21 @@ public class MailSenderFacade {
     }
     public  Mail sendMail(Mail mail,boolean wasDraft,List<String> attachmentIds){
 
+        List<Attachment> attachments = new ArrayList<>();
         if(wasDraft){
+            List<Mail> drafts= userService.getUserByEmail(mail.getFrom()).getDrafts();
+            for (Mail draft : drafts){
+                if(Objects.equals(draft.getId(), mail.getId())) {
+                    attachments = draft.getAttachments();
+                    break;
+                }
+            }
             draftService.deleteDraft(mail.getFrom(),mail.getId());
         }
 
         mail.setDateTime(LocalDateTime.now().withNano(0));
         mail.setId(Long.toString(System.currentTimeMillis()));
 
-        ArrayList<Attachment> attachments=new ArrayList<Attachment>();
         for (String attachmentId : attachmentIds) {
             attachments.add(attachmentService.get(attachmentId));
             attachmentService.remove(attachmentId);
@@ -51,6 +59,11 @@ public class MailSenderFacade {
         User sender = userService.getUserByEmail(from);
         if(sender != null){
             sender.getSent().add(mail);
+        }
+
+        userService.saveUsers(from);
+        for(String email:to){
+            userService.saveUsers(email);
         }
         return mail;
     }

@@ -17,6 +17,7 @@ public class FolderController {
     @DeleteMapping("/folder/{email}/{folderName}")
     public void deleteFolder(@PathVariable  String email, @PathVariable String folderName){
         folderService.deleteFolder(email,folderName);
+
     }
 
     @PostMapping("/folder/{email}/{oldName}/{newName}")

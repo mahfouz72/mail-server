@@ -41,6 +41,7 @@ public class ContactService {
                 && checkContactSimilarity(userEmailAddress, contactEmailAddress)) {
             Contact contact = new Contact(contactName, contactEmailAddress);
             userService.getUserByEmail(userEmailAddress).getContacts().add(contact);
+            userService.saveUsers(userEmailAddress);
             return "Contact added successfully";
         } else if (!checkContactExistence(contactEmailAddress)) {
             return "No Such User Found";
@@ -60,6 +61,7 @@ public class ContactService {
                 }
             }
         }
+        userService.saveUsers(userEmailAddress);
         return "Contact edited successfully";
     }
 
@@ -74,6 +76,7 @@ public class ContactService {
                 for (String email : emails) {
                     if (email.equalsIgnoreCase(contactEmailAddress)) {
                         contact.setEmailAddress(email_number, newContactEmailAddress);
+                        userService.saveUsers(userEmailAddress);
                         return "Contact email successfully reset";
                     }
                     email_number++;
@@ -94,6 +97,7 @@ public class ContactService {
                 for (String email : emails) {
                     if(email.equalsIgnoreCase(contactEmailAddress)) {
                         contact.addEmailAddress(newContactEmailAddress);
+                        userService.saveUsers(userEmailAddress);
                         return "Contact email successfully added";
                     }
                 }
@@ -112,9 +116,11 @@ public class ContactService {
                 if(email.equalsIgnoreCase(contactEmailAddress)){
                     if(emails.size() == 1) {
                         contacts.remove(contact);
+                        userService.saveUsers(userEmailAddress);
                         return "Contact Deleted";
                     }
                     contact.removeEmailAddress(removedContactEmailAddress);
+                    userService.saveUsers(userEmailAddress);
                     return "Contact email successfully removed";
                 }
             }
@@ -125,6 +131,7 @@ public class ContactService {
     public void deleteContact(String userEmailAddress, String contactEmailAddress) {
         List<Contact> contacts = userService.getUserByEmail(userEmailAddress).getContacts();
         contacts.removeIf(contact -> contact.getEmailAddresses().contains(contactEmailAddress));
+        userService.saveUsers(userEmailAddress);
     }
 
     public List<Contact> sortContacts(String userEmailAddress, String order) {
