@@ -15,6 +15,9 @@ public class UserController {
 
     @PostMapping("/user/register")
     public User register(@Valid @RequestBody User user){
+        if(userService.getUserByEmail(user.getEmail()) != null)
+            throw new RuntimeException("User already exists!");
+        
         return userService.addUser(user);
     }
 
