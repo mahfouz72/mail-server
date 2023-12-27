@@ -1,42 +1,145 @@
 package com.mailserver.service;
 
-import com.mailserver.model.Contact;
-import com.mailserver.model.User;
+import com.mailserver.model.*;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class ContactService {
-    //Assuming that the contact is already a user so no need to have a collection for contacts
+    // Assuming that the contact is already a user so no need to have a collection
+    // for contacts
     private UserService userService = UserService.getInstance();
 
-    private boolean checkContactExistence(List<String> emailAddresses){
-        for(String emailAddress:emailAddresses){
-            if(userService.getUserByEmail(emailAddress) == null){
-                return false;
+    private boolean checkContactExistence(String contactEmailAddress) {
+        if (userService.getUserByEmail(contactEmailAddress) == null) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkContactSimilarity(String userEmailAddress, String newContactEmailAddress) {
+        List<Contact> contacts = userService.getUserByEmail(userEmailAddress).getContacts();
+        for (Contact contact : contacts) {
+            List<String> emails = contact.getEmailAddresses();
+            for (String email : emails) {
+                if (email.equalsIgnoreCase(newContactEmailAddress)) {
+                    return false;
+                }
             }
         }
         return true;
     }
-    public void createContact(String userEmailAddress,Contact contact){
-        if(checkContactExistence(contact.getEmailAddresses())){
+
+    public List<Contact> getContacts(String userEmailAddress) {
+        return userService.getUserByEmail(userEmailAddress).getContacts();
+    }
+
+    public String createContact(String userEmailAddress, String contactName, String contactEmailAddress) {
+        if (checkContactExistence(contactEmailAddress)
+                && checkContactSimilarity(userEmailAddress, contactEmailAddress)) {
+            Contact contact = new Contact(contactName, contactEmailAddress);
             userService.getUserByEmail(userEmailAddress).getContacts().add(contact);
+            return "Contact added successfully";
+        } else if (!checkContactExistence(contactEmailAddress)) {
+            return "No Such User Found";
         }
+        return "Another Contact Has This Email";
     }
-    public void editContact(String userEmailAddress,String contactName,String contactEmailAddress){
-            Contact contact = userService.getUserByEmail(userEmailAddress).getContacts()
-                    .stream().filter(c -> c.getEmailAddresses()
-                            .contains(contactEmailAddress)).findFirst().get();
-            contact.setName(contactName);
+
+    public String renameContact(String userEmailAddress, String newContactName, String contactEmailAddress) {
+        List<Contact> contacts = userService.getUserByEmail(userEmailAddress).getContacts();
+
+        for (Contact contact : contacts) {
+            List<String> emails = contact.getEmailAddresses();
+            for (String email : emails) {
+                if (email.equalsIgnoreCase(contactEmailAddress)) {
+                    contact.setName(newContactName);
+                    break;
+                }
+            }
+        }
+        return "Contact edited successfully";
     }
-    public void deleteContact(String userEmailAddress,String contactEmailAddress){
+
+    public String resetContact(String userEmailAddress, String contactEmailAddress, String newContactEmailAddress) {
+
+        if (checkContactExistence(newContactEmailAddress)
+                && checkContactSimilarity(userEmailAddress, newContactEmailAddress)) {
+            List<Contact> contacts = userService.getUserByEmail(userEmailAddress).getContacts();
+            for (Contact contact : contacts) {
+                int email_number = 0;
+                List<String> emails = contact.getEmailAddresses();
+                for (String email : emails) {
+                    if (email.equalsIgnoreCase(contactEmailAddress)) {
+                        contact.setEmailAddress(email_number, newContactEmailAddress);
+                        return "Contact email successfully reset";
+                    }
+                    email_number++;
+                }
+            }
+        } else if (!checkContactExistence(newContactEmailAddress)) {
+            return "No Such User Found";
+        }
+        return "Another Contact Has This Email";
+    }
+
+    public String addEmail(String userEmailAddress, String contactEmailAddress, String newContactEmailAddress) {
+        if (checkContactExistence(newContactEmailAddress)
+                && checkContactSimilarity(userEmailAddress, newContactEmailAddress)) {
+            List<Contact> contacts = userService.getUserByEmail(userEmailAddress).getContacts();
+            for (Contact contact : contacts) {
+                List<String> emails = contact.getEmailAddresses();
+                for (String email : emails) {
+                    if(email.equalsIgnoreCase(contactEmailAddress)) {
+                        contact.addEmailAddress(newContactEmailAddress);
+                        return "Contact email successfully added";
+                    }
+                }
+            }
+        } else if (!checkContactExistence(newContactEmailAddress)) {
+            return "No Such User Found";
+        }
+        return "Another Contact Has This Email";
+    }
+
+    public String removeEmail(String userEmailAddress, String contactEmailAddress, String removedContactEmailAddress) {
+        List<Contact> contacts = userService.getUserByEmail(userEmailAddress).getContacts();
+        for (Contact contact : contacts) {
+            List<String> emails = contact.getEmailAddresses();
+            for (String email : emails) {
+                if(email.equalsIgnoreCase(contactEmailAddress)){
+                    if(emails.size() == 1) {
+                        contacts.remove(contact);
+                        return "Contact Deleted";
+                    }
+                    contact.removeEmailAddress(removedContactEmailAddress);
+                    return "Contact email successfully removed";
+                }
+            }
+        }
+        return "No Such Contact Found";
+    }
+
+    public void deleteContact(String userEmailAddress, String contactEmailAddress) {
         List<Contact> contacts = userService.getUserByEmail(userEmailAddress).getContacts();
         contacts.removeIf(contact -> contact.getEmailAddresses().contains(contactEmailAddress));
     }
-    public List<Contact> sortContacts(String userEmailAddress){
-       return userService.getUserByEmail(userEmailAddress).getContacts()
-               .stream().sorted(Contact::compareTo).toList();
+
+    public List<Contact> sortContacts(String userEmailAddress, String order) {
+        List<Contact> contacts = userService.getUserByEmail(userEmailAddress).getContacts();
+        Comparator<Contact> compareByName = Comparator.comparing(Contact::getName);
+        if (order.equalsIgnoreCase("ascending")) {
+            contacts.sort(compareByName);
+        } else if (order.equalsIgnoreCase("descending")) {
+            contacts.sort(compareByName.reversed());
+        }
+        return contacts;
     }
 
+    public List<Contact> searchContacts(String userEmailAddress, String contactName) {
+        return userService.getUserByEmail(userEmailAddress).getContacts()
+                .stream().filter(contact -> contact.getName().contains(contactName)).toList();
+    }
 }
