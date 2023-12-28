@@ -63,8 +63,9 @@ public class MailSenderFacade {
         }
 
         userService.saveUsers(from);
-        for(String email:to){
-            userService.saveUsers(email);
+         for(String email:to){
+            if(userService.getUserByEmail(email) != null)
+                userService.saveUsers(email);
         }
         return mail;
     }
