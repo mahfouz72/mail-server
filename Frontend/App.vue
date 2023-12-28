@@ -454,6 +454,12 @@ export default {
     },
     moveEmail(selEmails) {
       let folder = prompt("Please enter folder name", "New Folder");
+      if(folder == null) return;
+      if(this.Folders.find(f => f.name === folder) == null){
+        alert('NO such Folder')
+        return;
+      }
+      this.getUsername(this.useremail)
       this.addedFolder = folder
       console.log(selEmails);
       for (let mail of selEmails) {
@@ -464,7 +470,6 @@ export default {
         }).then(res => res.json())
           .then(data => {
             console.log(data)
-            
           })
       }
       this.selectedEmails = [];
