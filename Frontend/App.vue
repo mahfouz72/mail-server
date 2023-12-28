@@ -75,7 +75,7 @@ export default {
       composing: false,
       windowState: 'viewFolders',
       Contacts: [],
-      s:[],
+      Folders:[],
       listing: 'Emails',
       addedFolder: ''
     }
