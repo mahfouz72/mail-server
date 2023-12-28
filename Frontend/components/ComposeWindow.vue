@@ -65,7 +65,7 @@ export default {
             this.$emit('closeWindow')
             const mailRequest = {
                 from: this.useremail,
-                to: [this.toField],
+                to: this.toField.replace(/\s/g, "").split(","),
                 subject: this.subjectField,
                 body: this.bodyField,
                 priority: this.priority.toUpperCase(),
@@ -95,7 +95,7 @@ export default {
         editDraft() {
             const mailRequest = {
                 from: this.useremail,
-                to: [this.toField],
+                to: this.toField.replace(/\s/g, "").split(","),
                 subject: this.subjectField,
                 body: this.bodyField,
                 priority: this.priority.toUpperCase(),
@@ -129,7 +129,7 @@ export default {
             const mailRequest = {
                 id: this.windowState === 'viewDraft' ? this.email.id : '',
                 from: this.useremail,
-                to: this.toField.split(','),
+                to: this.toField.replace(/\s/g, "").split(","),
                 subject: this.subjectField,
                 body: this.bodyField,
                 priority: this.priority.toUpperCase(),
