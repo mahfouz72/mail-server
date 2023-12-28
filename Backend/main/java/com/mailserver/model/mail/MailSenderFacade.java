@@ -40,6 +40,7 @@ public class MailSenderFacade {
         mail.setId(Long.toString(System.currentTimeMillis()));
 
         for (String attachmentId : attachmentIds) {
+            if(attachmentService.get(attachmentId) == null)continue;
             attachments.add(attachmentService.get(attachmentId));
             attachmentService.remove(attachmentId);
         }
