@@ -1,5 +1,5 @@
 <template>
-  <WelcomePage v-if="!userLoggedIn" @login="login" @signUp="signUp" :WelcomeMsg="WelcomeMsg" />
+  <WelcomePage v-if="!userLoggedIn" @login="login" @signUp="signUp" :WelcomeMsg="WelcomeMsg" @updateMessage="WelcomeMsg='' />
   <div v-else>
     <div class="Title">
       <span style="position: absolute; left: 0.1vw;margin-top: 0.2vh;">
