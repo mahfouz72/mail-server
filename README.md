@@ -26,17 +26,17 @@ This project aims to implement the basic functionalities of a mail server, inclu
    - The Façade pattern was used to simplify access to the set of objects related to email handling (such as UserService, DraftService, AttachmentService). The MailSenderFacade provides a simplified interface for     clients to communicate with these objects, hiding the complexity of the underlying subsystem components.
    
 2. Filter Pattern:
-  - The Filter pattern was used to implement the ability to filter mails based on different criteria. The Filter interface defines a common method for filtering mails, and concrete filter classes (e.g.,               SenderFilter, ReceiverFilter) implement this interface to provide specific filtering logic. Multiple filters can be chained together to create complex filtering conditions.
+   - The Filter pattern was used to implement the ability to filter mails based on different criteria. The Filter interface defines a common method for filtering mails, and concrete filter classes (e.g.,               SenderFilter, ReceiverFilter) implement this interface to provide specific filtering logic. Multiple filters can be chained together to create complex filtering conditions.
   
 3. Builder Pattern:
-  - The Builder pattern was employed to construct complex Mail objects step by step. The MailBuilder class provides a fluent interface to set different attributes of the Mail object, allowing for selective           modification of specific attributes. This pattern is particularly useful when dealing with objects that have a large number of optional parameters or configuration settings.
+   - The Builder pattern was employed to construct complex Mail objects step by step. The MailBuilder class provides a fluent interface to set different attributes of the Mail object, allowing for selective           modification of specific attributes. This pattern is particularly useful when dealing with objects that have a large number of optional parameters or configuration settings.
 
 4. Chain of Responsibility Pattern:
-  - The Chain of Responsibility pattern was used to process authentication-related requests. The base Handler class defines a common interface for concrete handlers, and each handler in the chain decides whether     to process the request or pass it to the next handler in the chain. This pattern provides a flexible and modular way to handle authentication requests.
+   - The Chain of Responsibility pattern was used to process authentication-related requests. The base Handler class defines a common interface for concrete handlers, and each handler in the chain decides whether     to process the request or pass it to the next handler in the chain. This pattern provides a flexible and modular way to handle authentication requests.
 
 5. Singlton Pattern
 
-### UML diagram
+### Full UML diagram
 ![all](https://github.com/mahfouz72/mail-service/assets/125591358/d61cf25b-588b-4155-bc1a-5b69d2b0efec)
 
 ### Screenshots
